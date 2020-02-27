@@ -204,6 +204,35 @@ object TelegramClient : Client.ResultHandler {
         return request
     }
 
+    fun loadChats(): TdRequest<List<TdApi.Chat>> {
+        val request = TdRequest<List<TdApi.Chat>>()
+
+        doAsync {
+            client.send(TdApi.GetChats(Long.MAX_VALUE, 0, 50)) {
+                scope.launch {
+                    when (it.constructor) {
+                        TdApi.Chats.CONSTRUCTOR -> {
+                            val chatIds = (it as TdApi.Chats).chatIds
+                            val chats = ArrayList<TdApi.Chat>()
+                            chatIds.forEach {
+                                chats.add(loadChat(it))
+                            }
+                            request.result = TdResult.Success(chats)
+                        }
+                        TdApi.Error.CONSTRUCTOR -> {
+                            request.result = TdResult.Error(null)
+                        }
+                        else -> {
+                            request.result = TdResult.Error(null)
+                        }
+                    }
+                }
+            }
+        }
+
+        return request
+    }
+
     fun getChat(chatId: Long): TdRequest<TdApi.Chat> {
         val request = TdRequest<TdApi.Chat>()
         requestScope.launch {

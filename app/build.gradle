@@ -31,7 +31,7 @@ android {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion "0.1.0-dev04"
+        kotlinCompilerExtensionVersion "0.1.0-dev05"
     }
 }
 
@@ -63,6 +63,7 @@ dependencies {
     implementation "androidx.ui:ui-material:$compose"
     implementation "androidx.ui:ui-tooling:$compose"
     implementation "androidx.ui:ui-foundation:$compose"
+    implementation "androidx.ui:ui-material-icons-extended:$compose"
     implementation "androidx.compose:compose-compiler:$compose"
     implementation "androidx.compose:compose-runtime:$compose"
 

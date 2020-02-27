@@ -3,10 +3,15 @@ package com.ibashkimi.telegram.ui
 import androidx.compose.Composable
 import androidx.ui.core.Modifier
 import androidx.ui.core.Text
+import androidx.ui.foundation.Clickable
 import androidx.ui.foundation.isSystemInDarkTheme
+import androidx.ui.graphics.vector.DrawVector
 import androidx.ui.layout.Center
 import androidx.ui.layout.LayoutWidth
 import androidx.ui.material.*
+import androidx.ui.material.icons.Icons
+import androidx.ui.material.icons.filled.ArrowBack
+import androidx.ui.material.ripple.Ripple
 import androidx.ui.material.surface.Surface
 import androidx.ui.res.stringResource
 import com.ibashkimi.telegram.Navigation
@@ -24,7 +29,7 @@ import com.ibashkimi.telegram.ui.login.WaitForNumberScreen
 fun MyApp(client: TelegramClient) {
     val isDark = isSystemInDarkTheme()
     MaterialTheme(
-            colors = if (isDark) darkColorPalette() else lightColorPalette()
+        colors = if (isDark) darkColorPalette() else lightColorPalette()
     ) {
         val authState = client.authState
         android.util.Log.d("MyApp", "auth state: ${authState.auth}")
@@ -62,22 +67,27 @@ private fun MainScreen() {
     val destination = Status.currentScreen
     val title = destination.title
     Scaffold(
-            topAppBar = {
-                if (destination == Screen.ChatList) {
-                    TopAppBar(title = { Text(stringResource(R.string.app_name)) })
-                } else {
-                    TopAppBar(
-                            title = { Text(title) },
-                            navigationIcon = {
-                                VectorImageButton(R.drawable.ic_arrow_back) {
-                                    Navigation.pop()
-                                }
-                            })
-                }
-            },
-            bodyContent = {
-                AppContent(destination, modifier = LayoutWidth.Fill)
+        topAppBar = {
+            if (destination == Screen.ChatList) {
+                TopAppBar(title = { Text(stringResource(R.string.app_name)) })
+            } else {
+                TopAppBar(
+                    title = { Text(title) },
+                    navigationIcon = {
+                        Ripple(bounded = false) {
+                            Clickable(onClick = { Navigation.pop() }) {
+                                DrawVector(
+                                    Icons.Default.ArrowBack,
+                                    tintColor = MaterialTheme.colors().onPrimary
+                                )
+                            }
+                        }
+                    })
             }
+        },
+        bodyContent = {
+            AppContent(destination, modifier = LayoutWidth.Fill)
+        }
     )
 }
 
@@ -86,7 +96,7 @@ private fun AppContent(screen: Screen, modifier: Modifier = Modifier.None) {
     Surface(color = (MaterialTheme.colors()).background, modifier = modifier) {
         when (screen) {
             is Screen.ChatList -> {
-                HomeScreen(chatsRequest = TelegramClient.loadChatIds())
+                HomeScreen(chatsRequest = TelegramClient.loadChats())
             }
             is Screen.Chat -> ChatScreen(chat = screen.chat)
         }
