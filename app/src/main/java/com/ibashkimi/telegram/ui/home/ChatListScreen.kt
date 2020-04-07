@@ -2,9 +2,12 @@ package com.ibashkimi.telegram.ui.home
 
 import android.util.Log
 import androidx.compose.Composable
-import androidx.ui.core.Text
+import androidx.ui.core.Alignment
+import androidx.ui.core.Modifier
 import androidx.ui.foundation.AdapterList
-import androidx.ui.layout.Center
+import androidx.ui.foundation.Text
+import androidx.ui.layout.fillMaxSize
+import androidx.ui.layout.wrapContentSize
 import androidx.ui.material.MaterialTheme
 import androidx.ui.res.stringResource
 import com.ibashkimi.telegram.R
@@ -31,12 +34,11 @@ fun HomeScreen(chatsRequest: TdRequest<List<TdApi.Chat>>) {
 
 @Composable
 private fun LoadingChats() {
-    Center {
-        Text(
-            text = stringResource(R.string.loading),
-            style = ((MaterialTheme.typography()).h5)
-        )
-    }
+    Text(
+        text = stringResource(R.string.loading),
+        style = MaterialTheme.typography.h5,
+        modifier = Modifier.fillMaxSize() + Modifier.wrapContentSize(Alignment.Center)
+    )
 }
 
 @Composable
@@ -51,10 +53,9 @@ private fun ChatsLoaded(chats: List<TdApi.Chat>) {
 
 @Composable
 private fun LoadingChatsError() {
-    Center {
-        Text(
-            text = stringResource(R.string.chats_error),
-            style = ((MaterialTheme.typography()).h5)
-        )
-    }
+    Text(
+        text = stringResource(R.string.chats_error),
+        style = MaterialTheme.typography.h5,
+        modifier = Modifier.fillMaxSize() + Modifier.wrapContentSize(Alignment.Center)
+    )
 }

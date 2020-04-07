@@ -1,10 +1,10 @@
 package com.ibashkimi.telegram.ui.login
 
 import androidx.compose.Composable
-import androidx.compose.Model
 import androidx.compose.state
-import androidx.ui.core.Text
-import androidx.ui.core.TextField
+import androidx.ui.core.Modifier
+import androidx.ui.foundation.Text
+import androidx.ui.foundation.TextField
 import androidx.ui.layout.*
 import androidx.ui.material.*
 import androidx.ui.unit.dp
@@ -37,18 +37,18 @@ private fun AuthorizationScreen(title: String, onEnter: (String) -> Unit) {
                 CircularProgressIndicator()
             } else {
                 val phoneNumber = state { "" }
-                Column(modifier = LayoutPadding(16.dp), arrangement = Arrangement.Center) {
+                Column(modifier = Modifier.padding(16.dp), arrangement = Arrangement.Center) {
                     TextField(
                         value = phoneNumber.value,
                         onValueChange = { phoneNumber.value = it },
-                        textStyle = ((MaterialTheme.typography()).h5)
+                        textStyle = MaterialTheme.typography.h5
                     )
                     Divider(
-                        color = ((MaterialTheme.colors()).onBackground),
-                        modifier = LayoutWidth.Fill
+                        color = MaterialTheme.colors.onBackground,
+                        modifier = Modifier.fillMaxWidth()
                     )
-                    Spacer(modifier = LayoutHeight(16.dp))
-                    Button(modifier = LayoutGravity.End, children = {
+                    Spacer(modifier = Modifier.preferredHeight(16.dp))
+                    Button(modifier = Modifier.gravity(ColumnAlign.End), children = {
                         Text("Enter")
                     }, onClick = {
                         onEnter(phoneNumber.value)

@@ -4,15 +4,15 @@ import android.text.format.DateUtils
 import android.util.Log
 import androidx.compose.Composable
 import androidx.ui.core.Modifier
-import androidx.ui.core.Opacity
-import androidx.ui.core.Text
+import androidx.ui.core.drawOpacity
 import androidx.ui.foundation.Clickable
+import androidx.ui.foundation.Text
 import androidx.ui.layout.Column
-import androidx.ui.layout.LayoutPadding
-import androidx.ui.layout.LayoutWidth
 import androidx.ui.layout.Row
+import androidx.ui.layout.fillMaxWidth
+import androidx.ui.layout.padding
 import androidx.ui.material.MaterialTheme
-import androidx.ui.material.ripple.Ripple
+import androidx.ui.material.ripple.ripple
 import androidx.ui.text.font.FontWeight
 import androidx.ui.unit.dp
 import org.drinkless.td.libcore.telegram.TdApi
@@ -22,28 +22,34 @@ fun ChatTitle(text: String, modifier: Modifier = Modifier.None) {
     Text(
         text,
         modifier = modifier,
-        style = ((MaterialTheme.typography()).body1).copy(fontWeight = FontWeight.W500)
+        style = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.W500)
     )
 }
 
 @Composable
 fun ChatSummary(text: String) {
-    Opacity(opacity = 0.6f) {
-        Text(text, style = ((MaterialTheme.typography()).subtitle1), maxLines = 2)
-    }
+    Text(
+        text,
+        style = MaterialTheme.typography.subtitle1,
+        maxLines = 2,
+        modifier = Modifier.drawOpacity(0.6f)
+    )
 }
 
 @Composable
 fun ChatTime(text: String) {
-    Opacity(opacity = 0.6f) {
-        Text(text, style = ((MaterialTheme.typography()).caption), maxLines = 1)
-    }
+    Text(
+        text,
+        style = MaterialTheme.typography.caption,
+        maxLines = 1,
+        modifier = Modifier.drawOpacity(0.6f)
+    )
 }
 
 @Composable
 fun ChatItem(chat: TdApi.Chat) {
     Log.d("ChatItem", "chat: $chat")
-    Column(modifier = LayoutWidth.Fill + LayoutPadding(16.dp, 8.dp, 16.dp, 8.dp)) {
+    Column(modifier = Modifier.fillMaxWidth() + Modifier.padding(16.dp, 8.dp, 16.dp, 8.dp)) {
         val content: String = chat.lastMessage?.content?.let {
             when (it.constructor) {
                 TdApi.MessageText.CONSTRUCTOR -> {
@@ -61,7 +67,7 @@ fun ChatItem(chat: TdApi.Chat) {
         } ?: ""
 
         Row {
-            ChatTitle(chat.title, modifier = LayoutFlexible(1f))
+            ChatTitle(chat.title, modifier = Modifier.fillMaxWidth())
             chat.lastMessage?.date?.toLong()?.let { it * 1000 }?.let {
                 ChatTime(it.toRelativeTimeSpan())
             }
@@ -80,9 +86,7 @@ private fun Long.toRelativeTimeSpan(): String =
 
 @Composable
 fun ClickableChatItem(chat: TdApi.Chat, onClick: () -> Unit = {}) {
-    Ripple(bounded = true) {
-        Clickable(onClick = onClick) {
-            ChatItem(chat)
-        }
+    Clickable(onClick = onClick, modifier = Modifier.ripple()) {
+        ChatItem(chat)
     }
 }
