@@ -50,12 +50,7 @@ fun ChatTime(text: String) {
 fun ChatItem(chat: TdApi.Chat, modifier: Modifier = Modifier) {
     Log.d("ChatItem", "chat: $chat")
     Column(
-        modifier = Modifier.fillMaxWidth() + Modifier.padding(
-            16.dp,
-            8.dp,
-            16.dp,
-            8.dp
-        ) + modifier
+        modifier = Modifier.fillMaxWidth() + modifier
     ) {
         val content: String = chat.lastMessage?.content?.let {
             when (it.constructor) {
@@ -93,5 +88,10 @@ private fun Long.toRelativeTimeSpan(): String =
 
 @Composable
 fun ClickableChatItem(chat: TdApi.Chat, onClick: () -> Unit = {}) {
-    ChatItem(chat, modifier = Modifier.clickable(onClick = onClick) + Modifier.ripple())
+    ChatItem(
+        chat,
+        modifier = Modifier.clickable(onClick = onClick)
+                + Modifier.ripple()
+                + Modifier.padding(16.dp, 8.dp, 16.dp, 8.dp)
+    )
 }
