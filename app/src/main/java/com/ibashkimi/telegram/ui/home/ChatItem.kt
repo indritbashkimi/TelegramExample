@@ -5,8 +5,8 @@ import android.util.Log
 import androidx.compose.Composable
 import androidx.ui.core.Modifier
 import androidx.ui.core.drawOpacity
-import androidx.ui.foundation.Clickable
 import androidx.ui.foundation.Text
+import androidx.ui.foundation.clickable
 import androidx.ui.layout.Column
 import androidx.ui.layout.Row
 import androidx.ui.layout.fillMaxWidth
@@ -18,7 +18,7 @@ import androidx.ui.unit.dp
 import org.drinkless.td.libcore.telegram.TdApi
 
 @Composable
-fun ChatTitle(text: String, modifier: Modifier = Modifier.None) {
+fun ChatTitle(text: String, modifier: Modifier = Modifier) {
     Text(
         text,
         modifier = modifier,
@@ -47,9 +47,16 @@ fun ChatTime(text: String) {
 }
 
 @Composable
-fun ChatItem(chat: TdApi.Chat) {
+fun ChatItem(chat: TdApi.Chat, modifier: Modifier = Modifier) {
     Log.d("ChatItem", "chat: $chat")
-    Column(modifier = Modifier.fillMaxWidth() + Modifier.padding(16.dp, 8.dp, 16.dp, 8.dp)) {
+    Column(
+        modifier = Modifier.fillMaxWidth() + Modifier.padding(
+            16.dp,
+            8.dp,
+            16.dp,
+            8.dp
+        ) + modifier
+    ) {
         val content: String = chat.lastMessage?.content?.let {
             when (it.constructor) {
                 TdApi.MessageText.CONSTRUCTOR -> {
@@ -86,7 +93,5 @@ private fun Long.toRelativeTimeSpan(): String =
 
 @Composable
 fun ClickableChatItem(chat: TdApi.Chat, onClick: () -> Unit = {}) {
-    Clickable(onClick = onClick, modifier = Modifier.ripple()) {
-        ChatItem(chat)
-    }
+    ChatItem(chat, modifier = Modifier.clickable(onClick = onClick) + Modifier.ripple())
 }

@@ -3,9 +3,9 @@ package com.ibashkimi.telegram.ui
 import androidx.compose.Composable
 import androidx.ui.core.Alignment
 import androidx.ui.core.Modifier
-import androidx.ui.foundation.Clickable
 import androidx.ui.foundation.Image
 import androidx.ui.foundation.Text
+import androidx.ui.foundation.clickable
 import androidx.ui.foundation.isSystemInDarkTheme
 import androidx.ui.graphics.ColorFilter
 import androidx.ui.layout.fillMaxWidth
@@ -85,16 +85,14 @@ private fun MainScreen() {
                 TopAppBar(
                     title = { Text(title) },
                     navigationIcon = {
-                        Clickable(
-                            onClick = { Navigation.pop() },
-                            modifier = Modifier.ripple() + Modifier.padding(16.dp)
-                        ) {
-                            Image(
-                                asset = Icons.Default.ArrowBack,
-                                alignment = Alignment.Center,
-                                colorFilter = ColorFilter.tint(MaterialTheme.colors.onPrimary)
-                            )
-                        }
+                        Image(
+                            modifier = Modifier.clickable(onClick = { Navigation.pop() }) + Modifier.ripple() + Modifier.padding(
+                                16.dp
+                            ),
+                            asset = Icons.Default.ArrowBack,
+                            alignment = Alignment.Center,
+                            colorFilter = ColorFilter.tint(MaterialTheme.colors.onPrimary)
+                        )
                     })
             }
         },
@@ -105,7 +103,7 @@ private fun MainScreen() {
 }
 
 @Composable
-private fun AppContent(screen: Screen, modifier: Modifier = Modifier.None) {
+private fun AppContent(screen: Screen, modifier: Modifier = Modifier) {
     Surface(color = MaterialTheme.colors.background, modifier = modifier) {
         when (screen) {
             is Screen.ChatList -> {

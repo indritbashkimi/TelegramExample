@@ -22,7 +22,7 @@ import com.ibashkimi.telegram.data.TelegramClient
 import org.drinkless.td.libcore.telegram.TdApi
 
 @Composable
-fun ChatScreen(chat: TdApi.Chat, modifier: Modifier = Modifier.None) {
+fun ChatScreen(chat: TdApi.Chat, modifier: Modifier = Modifier) {
     val history = TelegramClient.getMessages(chat.id)
     val context = ContextAmbient.current
     Column(modifier = modifier + Modifier.fillMaxWidth()) {
@@ -34,7 +34,7 @@ fun ChatScreen(chat: TdApi.Chat, modifier: Modifier = Modifier.None) {
 }
 
 @Composable
-fun ChatHistory(history: TdRequest<TdApi.Messages>, modifier: Modifier = Modifier.None) {
+fun ChatHistory(history: TdRequest<TdApi.Messages>, modifier: Modifier = Modifier) {
     Column(modifier = modifier) {
         when (val result = history.result) {
             is TdResult.Loading -> Text("Loading")
@@ -60,7 +60,7 @@ fun ChatHistory(history: TdRequest<TdApi.Messages>, modifier: Modifier = Modifie
 }
 
 @Composable
-private fun MessageItem(message: TdApi.Message, modifier: Modifier = Modifier.None) {
+private fun MessageItem(message: TdApi.Message, modifier: Modifier = Modifier) {
     when (val content = message.content) {
         is TdApi.MessageText -> TextMessage(content, modifier)
         is TdApi.MessageVideo -> VideoMessage(content, modifier)
@@ -73,10 +73,10 @@ private fun MessageItem(message: TdApi.Message, modifier: Modifier = Modifier.No
 }
 
 @Composable
-fun MessageInput(modifier: Modifier = Modifier.None, onEnter: (String) -> Unit) {
-    val input = state { "" }
+fun MessageInput(modifier: Modifier = Modifier, onEnter: (String) -> Unit) {
+    val input = state { TextFieldValue() }
     Card(elevation = 4.dp, modifier = modifier + Modifier.fillMaxWidth()) {
-        Row(arrangement = Arrangement.End) {
+        Row(horizontalArrangement = Arrangement.End) {
             Column(
                 modifier = Modifier.fillMaxWidth() + Modifier.padding(16.dp)
             ) {
@@ -91,13 +91,12 @@ fun MessageInput(modifier: Modifier = Modifier.None, onEnter: (String) -> Unit) 
                 )
             }
             Spacer(modifier = Modifier.padding(end = 16.dp))
-            Clickable(onClick = { onEnter(input.value) }, modifier = Modifier.ripple()) {
-                Image(
-                    asset = Icons.Default.Send,
-                    alignment = Alignment.Center,
-                    colorFilter = ColorFilter.tint(MaterialTheme.colors.onPrimary)
-                )
-            }
+            Image(
+                modifier = Modifier.clickable(onClick = { onEnter(input.value.text) }) + Modifier.ripple(),
+                asset = Icons.Default.Send,
+                alignment = Alignment.Center,
+                colorFilter = ColorFilter.tint(MaterialTheme.colors.onPrimary)
+            )
         }
     }
 }

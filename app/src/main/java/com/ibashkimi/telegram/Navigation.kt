@@ -8,7 +8,7 @@ import org.drinkless.td.libcore.telegram.TdApi
  * Class defining the screens we have in the app: home, article details and interests
  */
 sealed class Screen(val title: String) {
-    object ChatList : Screen(stringResource(R.string.app_name))
+    object ChatList : Screen("Telegram")
     class Chat(val chat: TdApi.Chat): Screen(chat.title)
 }
 
