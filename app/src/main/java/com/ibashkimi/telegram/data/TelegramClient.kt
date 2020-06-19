@@ -200,7 +200,7 @@ object TelegramClient : Client.ResultHandler {
         val request = TdRequest<LongArray>()
 
         doAsync {
-            client.send(TdApi.GetChats(Long.MAX_VALUE, 0, 50)) {
+            client.send(TdApi.GetChats(TdApi.ChatListMain(), Long.MAX_VALUE, 0, 50)) {
                 scope.launch {
                     when (it.constructor) {
                         TdApi.Chats.CONSTRUCTOR -> {
@@ -225,7 +225,7 @@ object TelegramClient : Client.ResultHandler {
         val request = TdRequest<List<TdApi.Chat>>()
 
         doAsync {
-            client.send(TdApi.GetChats(Long.MAX_VALUE, 0, 50)) {
+            client.send(TdApi.GetChats(TdApi.ChatListMain(), Long.MAX_VALUE, 0, 50)) {
                 scope.launch {
                     when (it.constructor) {
                         TdApi.Chats.CONSTRUCTOR -> {
