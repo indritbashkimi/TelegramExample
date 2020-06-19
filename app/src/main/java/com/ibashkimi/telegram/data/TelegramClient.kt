@@ -97,9 +97,9 @@ object TelegramClient : Client.ResultHandler {
     fun insertPhoneNumber(phoneNumber: String) {
         Log.d("TelegramClient", "phoneNumber: $phoneNumber")
         val settings = TdApi.PhoneNumberAuthenticationSettings(
-                false,
-                false,
-                false
+            false,
+            false,
+            false
         )
         client.send(TdApi.SetAuthenticationPhoneNumber(phoneNumber, settings)) {
             Log.d("TelegramClient", "phoneNumber. result: $it")
@@ -149,7 +149,10 @@ object TelegramClient : Client.ResultHandler {
     private fun onAuthorizationStateUpdated(authorizationState: TdApi.AuthorizationState) {
         when (authorizationState.constructor) {
             TdApi.AuthorizationStateWaitTdlibParameters.CONSTRUCTOR -> {
-                Log.d(TAG, "onResult: AuthorizationStateWaitTdlibParameters -> state = UNAUTHENTICATED")
+                Log.d(
+                    TAG,
+                    "onResult: AuthorizationStateWaitTdlibParameters -> state = UNAUTHENTICATED"
+                )
                 setAuth(Authentication.UNAUTHENTICATED)
             }
             TdApi.AuthorizationStateWaitEncryptionKey.CONSTRUCTOR -> {
