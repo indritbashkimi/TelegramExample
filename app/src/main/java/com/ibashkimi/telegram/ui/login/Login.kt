@@ -26,6 +26,14 @@ fun WaitForCodeScreen(onEnter: (String) -> Unit) {
 }
 
 @Composable
+fun WaitForPasswordScreen(onEnter: (String) -> Unit) {
+    AuthorizationScreen(
+        title = "Enter password",
+        onEnter = onEnter
+    )
+}
+
+@Composable
 private fun AuthorizationScreen(title: String, onEnter: (String) -> Unit) {
     val executed = state { false }
     Scaffold(

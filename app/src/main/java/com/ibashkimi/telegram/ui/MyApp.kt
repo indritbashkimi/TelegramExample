@@ -27,6 +27,7 @@ import com.ibashkimi.telegram.ui.chat.ChatScreen
 import com.ibashkimi.telegram.ui.home.HomeScreen
 import com.ibashkimi.telegram.ui.login.WaitForCodeScreen
 import com.ibashkimi.telegram.ui.login.WaitForNumberScreen
+import com.ibashkimi.telegram.ui.login.WaitForPasswordScreen
 
 @Composable
 fun MyApp(client: TelegramClient) {
@@ -58,6 +59,11 @@ fun MyApp(client: TelegramClient) {
             Authentication.WAIT_FOR_CODE -> {
                 WaitForCodeScreen {
                     client.insertCode(it)
+                }
+            }
+            Authentication.WAIT_FOR_PASSWORD -> {
+                WaitForPasswordScreen {
+                    client.insertPassword(it)
                 }
             }
             Authentication.AUTHENTICATED -> {

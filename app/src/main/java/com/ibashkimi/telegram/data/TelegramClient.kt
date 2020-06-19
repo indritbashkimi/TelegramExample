@@ -130,6 +130,22 @@ object TelegramClient : Client.ResultHandler {
         }
     }
 
+    fun insertPassword(password: String) {
+        Log.d("TelegramClient", "inserting password")
+        doAsync {
+            client.send(TdApi.CheckAuthenticationPassword(password)) {
+                when (it.constructor) {
+                    TdApi.Ok.CONSTRUCTOR -> {
+
+                    }
+                    TdApi.Error.CONSTRUCTOR -> {
+
+                    }
+                }
+            }
+        }
+    }
+
     private fun onAuthorizationStateUpdated(authorizationState: TdApi.AuthorizationState) {
         when (authorizationState.constructor) {
             TdApi.AuthorizationStateWaitTdlibParameters.CONSTRUCTOR -> {
@@ -159,6 +175,7 @@ object TelegramClient : Client.ResultHandler {
             }
             TdApi.AuthorizationStateWaitPassword.CONSTRUCTOR -> {
                 Log.d(TAG, "onResult: AuthorizationStateWaitPassword")
+                setAuth(Authentication.WAIT_FOR_PASSWORD)
             }
             TdApi.AuthorizationStateReady.CONSTRUCTOR -> {
                 Log.d(TAG, "onResult: AuthorizationStateReady -> state = AUTHENTICATED")
@@ -325,6 +342,7 @@ enum class Authentication {
     UNAUTHENTICATED,
     WAIT_FOR_NUMBER,
     WAIT_FOR_CODE,
+    WAIT_FOR_PASSWORD,
     AUTHENTICATED,
     UNKNOWN
 }
