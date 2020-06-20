@@ -1,6 +1,7 @@
 package com.ibashkimi.telegram.ui
 
 import androidx.compose.Composable
+import androidx.compose.collectAsState
 import androidx.ui.core.Alignment
 import androidx.ui.core.Modifier
 import androidx.ui.foundation.Image
@@ -37,9 +38,9 @@ fun MyApp(client: TelegramClient) {
     MaterialTheme(
         colors = if (isDark) darkColorPalette() else lightColorPalette()
     ) {
-        val authState = client.authState
-        android.util.Log.d("MyApp", "auth state: ${authState.auth}")
-        when (authState.auth) {
+        val authState = client.authState.collectAsState(Authentication.UNKNOWN)
+        android.util.Log.d("MyApp", "auth state: ${authState.value}")
+        when (authState.value) {
             Authentication.UNKNOWN -> {
                 Text(
                     "Waiting for client to initialize",

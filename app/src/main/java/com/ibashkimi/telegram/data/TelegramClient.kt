@@ -3,22 +3,26 @@ package com.ibashkimi.telegram.data
 import android.app.Application
 import android.os.Build
 import android.util.Log
-import androidx.compose.Model
 import com.ibashkimi.telegram.Configuration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.drinkless.td.libcore.telegram.Client
 import org.drinkless.td.libcore.telegram.TdApi
 import java.util.*
 
+@ExperimentalCoroutinesApi
 object TelegramClient : Client.ResultHandler {
 
     private val TAG = TelegramClient::class.java.simpleName
 
     val client = Client.create(this, null, null)
 
-    val authState = AuthState()
+    private val _authState = MutableStateFlow(Authentication.UNKNOWN)
+    val authState: StateFlow<Authentication> get() = _authState
 
     lateinit var application: Application // todo
 
@@ -36,7 +40,7 @@ object TelegramClient : Client.ResultHandler {
 
     private fun setAuth(auth: Authentication) {
         scope.launch {
-            authState.auth = auth
+            _authState.value = auth
         }
     }
 
@@ -61,8 +65,8 @@ object TelegramClient : Client.ResultHandler {
 
     fun startAuthentication() {
         Log.d(TAG, "startAuthentication called")
-        if (authState.auth != Authentication.UNAUTHENTICATED) {
-            throw IllegalStateException("Start authentication called but client already authenticated. State: ${authState.auth}.")
+        if (_authState.value != Authentication.UNAUTHENTICATED) {
+            throw IllegalStateException("Start authentication called but client already authenticated. State: ${_authState.value}.")
         }
 
         doAsync {
@@ -195,18 +199,5 @@ object TelegramClient : Client.ResultHandler {
             }
             else -> Log.d(TAG, "Unhandled authorizationState with data: $authorizationState.")
         }
-
     }
-}
-
-@Model
-class AuthState(var auth: Authentication = Authentication.UNKNOWN)
-
-enum class Authentication {
-    UNAUTHENTICATED,
-    WAIT_FOR_NUMBER,
-    WAIT_FOR_CODE,
-    WAIT_FOR_PASSWORD,
-    AUTHENTICATED,
-    UNKNOWN
 }
