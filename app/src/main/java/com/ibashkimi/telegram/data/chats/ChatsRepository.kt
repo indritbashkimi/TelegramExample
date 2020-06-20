@@ -52,4 +52,11 @@ class ChatsRepository(private val client: TelegramClient) {
         }
         awaitClose { }
     }
+
+    fun chatImage(chat: TdApi.Chat): Flow<String?> =
+        chat.photo?.small?.takeIf {
+            it.local?.isDownloadingCompleted == false
+        }?.id?.let { fileId ->
+            TelegramClient.downloadFile(fileId).map { chat.photo?.small?.local?.path }
+        } ?: flowOf(chat.photo?.small?.local?.path)
 }

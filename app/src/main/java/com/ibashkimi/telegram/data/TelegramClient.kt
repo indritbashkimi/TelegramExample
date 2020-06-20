@@ -7,8 +7,10 @@ import com.ibashkimi.telegram.Configuration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import org.drinkless.td.libcore.telegram.Client
 import org.drinkless.td.libcore.telegram.TdApi
@@ -199,5 +201,19 @@ object TelegramClient : Client.ResultHandler {
             }
             else -> Log.d(TAG, "Unhandled authorizationState with data: $authorizationState.")
         }
+    }
+
+    fun downloadFile(fileId: Int): Flow<Unit> = flow {
+        client.send(TdApi.DownloadFile(fileId, 1, 0, 0, true)) {
+            when (it.constructor) {
+                TdApi.Ok.CONSTRUCTOR -> {
+
+                }
+                else -> {
+                    error("")
+                }
+            }
+        }
+        emit(Unit)
     }
 }

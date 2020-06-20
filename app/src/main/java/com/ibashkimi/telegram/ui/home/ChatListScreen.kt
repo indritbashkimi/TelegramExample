@@ -27,7 +27,7 @@ fun HomeScreen(chatsRepository: ChatsRepository) {
             LoadingChats()
         }
         is Response.Success -> {
-            ChatsLoaded(response.data)
+            ChatsLoaded(chatsRepository, response.data)
         }
         is Response.Error -> {
             LoadingChatsError()
@@ -45,10 +45,10 @@ private fun LoadingChats() {
 }
 
 @Composable
-private fun ChatsLoaded(chats: List<TdApi.Chat>) {
+private fun ChatsLoaded(repository: ChatsRepository, chats: List<TdApi.Chat>) {
     Log.d("HomeScreen", "chat: $chats")
     AdapterList(chats) {
-        ClickableChatItem(it) {
+        ClickableChatItem(repository, it) {
             navigateTo(Screen.Chat(it))
         }
     }
