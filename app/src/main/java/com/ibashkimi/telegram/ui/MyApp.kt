@@ -21,7 +21,6 @@ import androidx.ui.unit.dp
 import com.ibashkimi.telegram.Navigation
 import com.ibashkimi.telegram.R
 import com.ibashkimi.telegram.Screen
-import com.ibashkimi.telegram.Status
 import com.ibashkimi.telegram.data.Authentication
 import com.ibashkimi.telegram.data.TelegramClient
 import com.ibashkimi.telegram.data.chats.ChatsRepository
@@ -78,7 +77,7 @@ fun MyApp(client: TelegramClient) {
 
 @Composable
 private fun MainScreen() {
-    val destination = Status.currentScreen
+    val destination = Navigation.currentScreen.value
     val title = destination.title
     Scaffold(
         topAppBar = {

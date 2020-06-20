@@ -11,12 +11,12 @@ import androidx.ui.layout.fillMaxSize
 import androidx.ui.layout.wrapContentSize
 import androidx.ui.material.MaterialTheme
 import androidx.ui.res.stringResource
+import com.ibashkimi.telegram.Navigation
 import com.ibashkimi.telegram.R
 import com.ibashkimi.telegram.Screen
 import com.ibashkimi.telegram.data.Response
 import com.ibashkimi.telegram.data.asResponse
 import com.ibashkimi.telegram.data.chats.ChatsRepository
-import com.ibashkimi.telegram.navigateTo
 import org.drinkless.td.libcore.telegram.TdApi
 
 @Composable
@@ -49,7 +49,7 @@ private fun ChatsLoaded(repository: ChatsRepository, chats: List<TdApi.Chat>) {
     Log.d("HomeScreen", "chat: $chats")
     AdapterList(chats) {
         ClickableChatItem(repository, it) {
-            navigateTo(Screen.Chat(it))
+            Navigation.navigateTo(Screen.Chat(it))
         }
     }
 }
