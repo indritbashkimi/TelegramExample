@@ -15,6 +15,7 @@ import androidx.ui.unit.dp
 fun WaitForNumberScreen(onEnter: (String) -> Unit) {
     AuthorizationScreen(
         title = "Enter phone number",
+        message = "Please enter your number in international format",
         onEnter = onEnter
     )
 }
@@ -36,7 +37,7 @@ fun WaitForPasswordScreen(onEnter: (String) -> Unit) {
 }
 
 @Composable
-private fun AuthorizationScreen(title: String, onEnter: (String) -> Unit) {
+private fun AuthorizationScreen(title: String, message: String? = null, onEnter: (String) -> Unit) {
     val executed = state { false }
     Scaffold(
         topAppBar = {
@@ -60,7 +61,11 @@ private fun AuthorizationScreen(title: String, onEnter: (String) -> Unit) {
                         color = MaterialTheme.colors.onBackground,
                         modifier = Modifier.fillMaxWidth()
                     )
-                    Spacer(modifier = Modifier.preferredHeight(16.dp))
+                    if (message == null) {
+                        Spacer(modifier = Modifier.preferredHeight(16.dp))
+                    } else {
+                        Text(message, modifier = Modifier.padding(16.dp))
+                    }
                     Button(modifier = Modifier.gravity(Alignment.End), text = {
                         Text("Enter")
                     }, onClick = {
