@@ -12,7 +12,6 @@ import androidx.ui.layout.Row
 import androidx.ui.layout.fillMaxWidth
 import androidx.ui.layout.padding
 import androidx.ui.material.MaterialTheme
-import androidx.ui.material.ripple.ripple
 import androidx.ui.text.font.FontWeight
 import androidx.ui.unit.dp
 import org.drinkless.td.libcore.telegram.TdApi
@@ -91,7 +90,6 @@ fun ClickableChatItem(chat: TdApi.Chat, onClick: () -> Unit = {}) {
     ChatItem(
         chat,
         modifier = Modifier.clickable(onClick = onClick)
-                + Modifier.ripple()
                 + Modifier.padding(16.dp, 8.dp, 16.dp, 8.dp)
     )
 }
