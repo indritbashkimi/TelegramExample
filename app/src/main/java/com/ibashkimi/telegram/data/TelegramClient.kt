@@ -5,7 +5,6 @@ import android.os.Build
 import android.util.Log
 import androidx.compose.Model
 import com.ibashkimi.telegram.Configuration
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -198,144 +197,6 @@ object TelegramClient : Client.ResultHandler {
         }
 
     }
-
-    fun loadChatIds(): TdRequest<LongArray> {
-        val request = TdRequest<LongArray>()
-
-        doAsync {
-            client.send(TdApi.GetChats(TdApi.ChatListMain(), Long.MAX_VALUE, 0, 50)) {
-                scope.launch {
-                    when (it.constructor) {
-                        TdApi.Chats.CONSTRUCTOR -> {
-                            val chatIds = (it as TdApi.Chats).chatIds
-                            request.result = TdResult.Success(chatIds)
-                        }
-                        TdApi.Error.CONSTRUCTOR -> {
-                            request.result = TdResult.Error(null)
-                        }
-                        else -> {
-                            request.result = TdResult.Error(null)
-                        }
-                    }
-                }
-            }
-        }
-
-        return request
-    }
-
-    fun loadChats(): TdRequest<List<TdApi.Chat>> {
-        val request = TdRequest<List<TdApi.Chat>>()
-
-        doAsync {
-            client.send(TdApi.GetChats(TdApi.ChatListMain(), Long.MAX_VALUE, 0, 50)) {
-                scope.launch {
-                    when (it.constructor) {
-                        TdApi.Chats.CONSTRUCTOR -> {
-                            val chatIds = (it as TdApi.Chats).chatIds
-                            val chats = ArrayList<TdApi.Chat>()
-                            chatIds.forEach {
-                                chats.add(loadChat(it))
-                            }
-                            request.result = TdResult.Success(chats)
-                        }
-                        TdApi.Error.CONSTRUCTOR -> {
-                            request.result = TdResult.Error(null)
-                        }
-                        else -> {
-                            request.result = TdResult.Error(null)
-                        }
-                    }
-                }
-            }
-        }
-
-        return request
-    }
-
-    fun getChat(chatId: Long): TdRequest<TdApi.Chat> {
-        val request = TdRequest<TdApi.Chat>()
-        requestScope.launch {
-            val chat = loadChat(chatId)
-            scope.launch { request.result = TdResult.Success(chat) }
-        }
-        return request
-    }
-
-    suspend fun loadChat(chatId: Long): TdApi.Chat {
-        val chat = CompletableDeferred<TdApi.Chat>()
-        doAsync {
-            client.send(TdApi.GetChat(chatId)) {
-                //throw Exception("Tana oh")
-                Log.d(TAG, "getChat result $it")
-                when (it.constructor) {
-                    TdApi.Chat.CONSTRUCTOR -> {
-                        chat.complete(it as TdApi.Chat)
-                    }
-                    TdApi.Error.CONSTRUCTOR -> {
-                        chat.completeExceptionally(Exception("Something went wrong"))
-                    }
-                    else -> {
-                        chat.completeExceptionally(Exception("Something went wrong"))
-                    }
-                }
-            }
-        }
-        return chat.await()
-    }
-
-    fun getMessages(chatId: Long): TdRequest<TdApi.Messages> {
-        val request = TdRequest<TdApi.Messages>()
-        doAsync {
-            client.send(TdApi.GetChatHistory(chatId, 0, 0, 100, false)) {
-                scope.launch {
-                    when (it.constructor) {
-                        TdApi.Messages.CONSTRUCTOR -> {
-                            request.result = TdResult.Success((it as TdApi.Messages))
-                        }
-                        TdApi.Error.CONSTRUCTOR -> {
-                            request.result = TdResult.Error(null)
-                        }
-                        else -> {
-                            request.result = TdResult.Error(null)
-                        }
-                    }
-                }
-            }
-        }
-        return request
-    }
-
-    fun getMessage(chatId: Long, messageId: Long): TdRequest<TdApi.Message> {
-        val request = TdRequest<TdApi.Message>()
-        requestScope.launch {
-            val chat = loadMessage(chatId, messageId)
-            scope.launch { request.result = TdResult.Success(chat) }
-        }
-        return request
-    }
-
-    private suspend fun loadMessage(chatId: Long, messageId: Long): TdApi.Message {
-        val message = CompletableDeferred<TdApi.Message>()
-        doAsync {
-            client.send(TdApi.GetMessage(chatId, messageId)) {
-                //throw Exception("Tana oh")
-                Log.d(TAG, "getMessage result $it")
-                when (it.constructor) {
-                    TdApi.Message.CONSTRUCTOR -> {
-                        message.complete(it as TdApi.Message)
-                    }
-                    TdApi.Error.CONSTRUCTOR -> {
-                        message.completeExceptionally(Exception("Something went wrong"))
-                    }
-                    else -> {
-                        message.completeExceptionally(Exception("Something went wrong"))
-                    }
-                }
-            }
-        }
-        return message.await()
-    }
 }
 
 @Model
@@ -348,13 +209,4 @@ enum class Authentication {
     WAIT_FOR_PASSWORD,
     AUTHENTICATED,
     UNKNOWN
-}
-
-@Model
-class TdRequest<T>(var result: TdResult<T> = TdResult.Loading())
-
-sealed class TdResult<T> {
-    class Loading<T> : TdResult<T>()
-    class Success<T>(val result: T) : TdResult<T>()
-    class Error<T>(val throwable: Throwable? = null) : TdResult<T>()
 }

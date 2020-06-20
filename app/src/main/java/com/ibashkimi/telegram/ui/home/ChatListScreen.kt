@@ -2,6 +2,7 @@ package com.ibashkimi.telegram.ui.home
 
 import android.util.Log
 import androidx.compose.Composable
+import androidx.compose.collectAsState
 import androidx.ui.core.Alignment
 import androidx.ui.core.Modifier
 import androidx.ui.foundation.AdapterList
@@ -12,21 +13,23 @@ import androidx.ui.material.MaterialTheme
 import androidx.ui.res.stringResource
 import com.ibashkimi.telegram.R
 import com.ibashkimi.telegram.Screen
-import com.ibashkimi.telegram.data.TdRequest
-import com.ibashkimi.telegram.data.TdResult
+import com.ibashkimi.telegram.data.Response
+import com.ibashkimi.telegram.data.asResponse
+import com.ibashkimi.telegram.data.chats.ChatsRepository
 import com.ibashkimi.telegram.navigateTo
 import org.drinkless.td.libcore.telegram.TdApi
 
 @Composable
-fun HomeScreen(chatsRequest: TdRequest<List<TdApi.Chat>>) {
-    when (val chats = chatsRequest.result) {
-        is TdResult.Loading -> {
+fun HomeScreen(chatsRepository: ChatsRepository) {
+    val chats = chatsRepository.getChats().asResponse().collectAsState()
+    when (val response = chats.value) {
+        null -> {
             LoadingChats()
         }
-        is TdResult.Success -> {
-            ChatsLoaded(chats.result)
+        is Response.Success -> {
+            ChatsLoaded(response.data)
         }
-        is TdResult.Error -> {
+        is Response.Error -> {
             LoadingChatsError()
         }
     }

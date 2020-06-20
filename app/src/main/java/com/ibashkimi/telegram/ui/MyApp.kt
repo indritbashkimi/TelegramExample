@@ -23,6 +23,8 @@ import com.ibashkimi.telegram.Screen
 import com.ibashkimi.telegram.Status
 import com.ibashkimi.telegram.data.Authentication
 import com.ibashkimi.telegram.data.TelegramClient
+import com.ibashkimi.telegram.data.chats.ChatsRepository
+import com.ibashkimi.telegram.data.messages.MessagesRepository
 import com.ibashkimi.telegram.ui.chat.ChatScreen
 import com.ibashkimi.telegram.ui.home.HomeScreen
 import com.ibashkimi.telegram.ui.login.WaitForCodeScreen
@@ -107,9 +109,9 @@ private fun AppContent(screen: Screen, modifier: Modifier = Modifier) {
     Surface(color = MaterialTheme.colors.background, modifier = modifier) {
         when (screen) {
             is Screen.ChatList -> {
-                HomeScreen(chatsRequest = TelegramClient.loadChats())
+                HomeScreen(ChatsRepository(TelegramClient))
             }
-            is Screen.Chat -> ChatScreen(chat = screen.chat)
+            is Screen.Chat -> ChatScreen(MessagesRepository(TelegramClient), screen.chat)
         }
     }
 }

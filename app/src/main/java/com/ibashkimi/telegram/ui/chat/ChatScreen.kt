@@ -1,10 +1,9 @@
 package com.ibashkimi.telegram.ui.chat
 
-import android.widget.Toast
 import androidx.compose.Composable
+import androidx.compose.collectAsState
 import androidx.compose.state
 import androidx.ui.core.Alignment
-import androidx.ui.core.ContextAmbient
 import androidx.ui.core.Modifier
 import androidx.ui.foundation.*
 import androidx.ui.graphics.ColorFilter
@@ -15,47 +14,59 @@ import androidx.ui.material.MaterialTheme
 import androidx.ui.material.icons.Icons
 import androidx.ui.material.icons.filled.Send
 import androidx.ui.material.ripple.ripple
+import androidx.ui.res.stringResource
 import androidx.ui.unit.dp
-import com.ibashkimi.telegram.data.TdRequest
-import com.ibashkimi.telegram.data.TdResult
-import com.ibashkimi.telegram.data.TelegramClient
+import com.ibashkimi.telegram.R
+import com.ibashkimi.telegram.data.Response
+import com.ibashkimi.telegram.data.asResponse
+import com.ibashkimi.telegram.data.messages.MessagesRepository
 import org.drinkless.td.libcore.telegram.TdApi
 
 @Composable
-fun ChatScreen(chat: TdApi.Chat, modifier: Modifier = Modifier) {
-    val history = TelegramClient.getMessages(chat.id)
-    val context = ContextAmbient.current
-    Column(modifier = modifier + Modifier.fillMaxWidth()) {
-        ChatHistory(history = history, modifier = Modifier.fillMaxWidth())
-        MessageInput {
-            Toast.makeText(context, "Not implemented yet", Toast.LENGTH_SHORT).show()
+fun ChatScreen(repository: MessagesRepository, chat: TdApi.Chat, modifier: Modifier = Modifier) {
+    val history = repository.getMessages(chat.id).asResponse().collectAsState()
+    when (val response = history.value) {
+        null -> {
+            ChatLoading()
+        }
+        is Response.Success -> {
+            Column(modifier = modifier + Modifier.fillMaxWidth()) {
+                ChatHistory(messages = response.data, modifier = Modifier.fillMaxWidth())
+                MessageInput {
+                    repository.sendMessage()
+                }
+            }
+        }
+        is Response.Error -> {
+            Text(
+                text = "Cannot load messages",
+                style = MaterialTheme.typography.h5,
+                modifier = modifier + Modifier.fillMaxSize() + Modifier.wrapContentSize(Alignment.Center)
+            )
         }
     }
 }
 
 @Composable
-fun ChatHistory(history: TdRequest<TdApi.Messages>, modifier: Modifier = Modifier) {
-    Column(modifier = modifier) {
-        when (val result = history.result) {
-            is TdResult.Loading -> Text("Loading")
-            is TdResult.Error -> Text("Error")
-            is TdResult.Success -> {
-                VerticalScroller {
-                    Column {
-                        result.result.messages.forEach {
-                            MessageItem(
-                                it, modifier = Modifier.padding(
-                                    start = 16.dp,
-                                    top = 8.dp,
-                                    end = 16.dp,
-                                    bottom = 8.dp
-                                )
-                            )
-                        }
-                    }
-                }
-            }
-        }
+fun ChatLoading(modifier: Modifier = Modifier) {
+    Text(
+        text = stringResource(R.string.loading),
+        style = MaterialTheme.typography.h5,
+        modifier = modifier + Modifier.fillMaxSize() + Modifier.wrapContentSize(Alignment.Center)
+    )
+}
+
+@Composable
+fun ChatHistory(messages: List<TdApi.Message>, modifier: Modifier = Modifier) {
+    AdapterList(data = messages) {
+        MessageItem(
+            it, modifier = Modifier.padding(
+                start = 16.dp,
+                top = 8.dp,
+                end = 16.dp,
+                bottom = 8.dp
+            )
+        )
     }
 }
 
