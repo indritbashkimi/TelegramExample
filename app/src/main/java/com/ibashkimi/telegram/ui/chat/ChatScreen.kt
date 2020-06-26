@@ -6,9 +6,14 @@ import androidx.compose.state
 import androidx.ui.core.Alignment
 import androidx.ui.core.Modifier
 import androidx.ui.core.clip
-import androidx.ui.foundation.*
+import androidx.ui.foundation.Image
+import androidx.ui.foundation.Text
+import androidx.ui.foundation.TextField
+import androidx.ui.foundation.clickable
+import androidx.ui.foundation.lazy.LazyColumnItems
 import androidx.ui.foundation.shape.corner.CircleShape
 import androidx.ui.graphics.ColorFilter
+import androidx.ui.input.TextFieldValue
 import androidx.ui.layout.*
 import androidx.ui.material.Card
 import androidx.ui.material.MaterialTheme
@@ -21,6 +26,7 @@ import com.ibashkimi.telegram.data.Repository
 import com.ibashkimi.telegram.data.Response
 import com.ibashkimi.telegram.data.asResponse
 import com.ibashkimi.telegram.ui.NetworkImage
+import kotlinx.coroutines.Dispatchers
 import org.drinkless.td.libcore.telegram.TdApi
 
 @Composable
@@ -67,7 +73,7 @@ fun ChatHistory(
     messages: List<TdApi.Message>,
     modifier: Modifier = Modifier
 ) {
-    AdapterList(data = messages, modifier = modifier) {
+    LazyColumnItems(items = messages, modifier = modifier) {
         MessageItem(repository, it)
     }
 }
@@ -82,7 +88,8 @@ private fun MessageItem(
         verticalGravity = Alignment.Bottom,
         modifier = Modifier.clickable(onClick = {}) + modifier.fillMaxWidth()
     ) {
-        val userPhoto = repository.users.getUser(message.senderUserId).collectAsState()
+        val userPhoto =
+            repository.users.getUser(message.senderUserId).collectAsState(null, Dispatchers.IO)
         val imageModifier = Modifier.padding(16.dp).size(40.dp).clip(shape = CircleShape)
         NetworkImage(
             url = userPhoto.value?.profilePhoto?.small?.local?.path,

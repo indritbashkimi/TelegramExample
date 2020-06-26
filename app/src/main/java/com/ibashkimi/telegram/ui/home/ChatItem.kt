@@ -22,6 +22,7 @@ import androidx.ui.unit.dp
 import com.ibashkimi.telegram.R
 import com.ibashkimi.telegram.data.Repository
 import com.ibashkimi.telegram.ui.NetworkImage
+import kotlinx.coroutines.Dispatchers
 import org.drinkless.td.libcore.telegram.TdApi
 
 @Composable
@@ -146,7 +147,7 @@ fun ChatItem(repository: Repository, chat: TdApi.Chat, modifier: Modifier = Modi
 
         val chatPhoto =
             repository.chats.chatImage(chat)
-                .collectAsState(initial = chat.photo?.small?.local?.path)
+                .collectAsState(chat.photo?.small?.local?.path, Dispatchers.IO)
         NetworkImage(
             url = chatPhoto.value,
             modifier = imageModifier,

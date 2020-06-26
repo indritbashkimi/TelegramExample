@@ -78,7 +78,7 @@ private fun MainScreen(repository: Repository) {
     val destination = currentScreen.value
     val title = destination.title
     Scaffold(
-        topAppBar = {
+        topBar = {
             if (destination == Screen.ChatList) {
                 TopAppBar(title = { Text(stringResource(R.string.app_name)) })
             } else {

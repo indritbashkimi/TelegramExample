@@ -5,8 +5,8 @@ import androidx.compose.Composable
 import androidx.compose.collectAsState
 import androidx.ui.core.Alignment
 import androidx.ui.core.Modifier
-import androidx.ui.foundation.AdapterList
 import androidx.ui.foundation.Text
+import androidx.ui.foundation.lazy.LazyColumnItems
 import androidx.ui.layout.fillMaxSize
 import androidx.ui.layout.padding
 import androidx.ui.layout.wrapContentSize
@@ -53,7 +53,7 @@ private fun ChatsLoaded(
     modifier: Modifier = Modifier
 ) {
     Log.d("HomeScreen", "chat: $chats")
-    AdapterList(chats, modifier = modifier.padding(start=16.dp)) {
+    LazyColumnItems(chats, modifier = modifier.padding(start = 16.dp)) {
         ClickableChatItem(repository, it) {
             Navigation.navigateTo(Screen.Chat(it))
         }

@@ -6,7 +6,7 @@ import androidx.ui.core.Alignment
 import androidx.ui.core.Modifier
 import androidx.ui.foundation.Text
 import androidx.ui.foundation.TextField
-import androidx.ui.foundation.TextFieldValue
+import androidx.ui.input.TextFieldValue
 import androidx.ui.layout.*
 import androidx.ui.material.*
 import androidx.ui.unit.dp
@@ -40,7 +40,7 @@ fun WaitForPasswordScreen(onEnter: (String) -> Unit) {
 private fun AuthorizationScreen(title: String, message: String? = null, onEnter: (String) -> Unit) {
     val executed = state { false }
     Scaffold(
-        topAppBar = {
+        topBar = {
             TopAppBar(title = { Text(title) })
         },
         bodyContent = {
