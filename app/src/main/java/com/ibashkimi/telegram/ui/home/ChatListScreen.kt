@@ -19,11 +19,12 @@ import com.ibashkimi.telegram.Screen
 import com.ibashkimi.telegram.data.Repository
 import com.ibashkimi.telegram.data.Response
 import com.ibashkimi.telegram.data.asResponse
+import kotlinx.coroutines.Dispatchers
 import org.drinkless.td.libcore.telegram.TdApi
 
 @Composable
 fun HomeScreen(repository: Repository, modifier: Modifier = Modifier) {
-    val chats = repository.chats.getChats().asResponse().collectAsState()
+    val chats = repository.chats.getChats().asResponse().collectAsState(null, Dispatchers.IO)
     when (val response = chats.value) {
         null -> {
             LoadingChats(modifier)
