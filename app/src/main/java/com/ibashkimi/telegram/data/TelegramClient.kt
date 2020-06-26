@@ -42,14 +42,10 @@ class TelegramClient(val application: Application) : Client.ResultHandler {
         client.close()
     }
 
-    private val scope = CoroutineScope(Dispatchers.Main)
-
     private val requestScope = CoroutineScope(Dispatchers.IO)
 
     private fun setAuth(auth: Authentication) {
-        scope.launch {
-            _authState.value = auth
-        }
+        _authState.value = auth
     }
 
     override fun onResult(data: TdApi.Object) {
