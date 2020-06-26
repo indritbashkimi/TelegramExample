@@ -77,7 +77,8 @@ fun MyApp(client: TelegramClient) {
 
 @Composable
 private fun MainScreen() {
-    val destination = Navigation.currentScreen.value
+    val currentScreen = Navigation.currentScreen.collectAsState()
+    val destination = currentScreen.value
     val title = destination.title
     Scaffold(
         topAppBar = {

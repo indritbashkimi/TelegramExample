@@ -1,6 +1,6 @@
 package com.ibashkimi.telegram
 
-import androidx.compose.mutableStateOf
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.drinkless.td.libcore.telegram.TdApi
 
 /**
@@ -15,7 +15,7 @@ object Navigation {
 
     private val stack = ArrayList<Screen>().apply { add(Screen.ChatList) }
 
-    var currentScreen = mutableStateOf<Screen>(Screen.ChatList)
+    val currentScreen = MutableStateFlow<Screen>(Screen.ChatList)
 
     fun push(destination: Screen) {
         stack.add(destination)
