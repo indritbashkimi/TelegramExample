@@ -3,7 +3,11 @@ package com.ibashkimi.telegram
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.ui.core.setContent
+import com.ibashkimi.telegram.data.Repository
 import com.ibashkimi.telegram.data.TelegramClient
+import com.ibashkimi.telegram.data.UserRepository
+import com.ibashkimi.telegram.data.chats.ChatsRepository
+import com.ibashkimi.telegram.data.messages.MessagesRepository
 import com.ibashkimi.telegram.ui.MyApp
 
 
@@ -14,10 +18,15 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val newClient = TelegramClient
-            newClient.application = this.application
+            val newClient = TelegramClient(this.application)
             client = newClient
-            MyApp(newClient)
+            val repository = Repository(
+                newClient,
+                ChatsRepository(newClient),
+                MessagesRepository(newClient),
+                UserRepository(newClient)
+            )
+            MyApp(repository)
         }
     }
 

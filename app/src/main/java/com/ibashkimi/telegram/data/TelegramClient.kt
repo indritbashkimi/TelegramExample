@@ -25,7 +25,7 @@ import java.util.*
  * </resources>
  */
 @ExperimentalCoroutinesApi
-object TelegramClient : Client.ResultHandler {
+class TelegramClient(val application: Application) : Client.ResultHandler {
 
     private val TAG = TelegramClient::class.java.simpleName
 
@@ -33,8 +33,6 @@ object TelegramClient : Client.ResultHandler {
 
     private val _authState = MutableStateFlow(Authentication.UNKNOWN)
     val authState: StateFlow<Authentication> get() = _authState
-
-    lateinit var application: Application // todo
 
     init {
         client.send(TdApi.GetAuthorizationState(), this)

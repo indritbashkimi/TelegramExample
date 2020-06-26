@@ -16,7 +16,7 @@ import androidx.ui.material.MaterialTheme
 import androidx.ui.text.font.FontWeight
 import androidx.ui.unit.dp
 import com.ibashkimi.telegram.R
-import com.ibashkimi.telegram.data.chats.ChatsRepository
+import com.ibashkimi.telegram.data.Repository
 import com.ibashkimi.telegram.ui.NetworkImage
 import org.drinkless.td.libcore.telegram.TdApi
 
@@ -50,12 +50,14 @@ fun ChatTime(text: String) {
 }
 
 @Composable
-fun ChatItem(repository: ChatsRepository, chat: TdApi.Chat, modifier: Modifier = Modifier) {
+fun ChatItem(repository: Repository, chat: TdApi.Chat, modifier: Modifier = Modifier) {
     Log.d("ChatItem", "chat: $chat")
     Row(verticalGravity = Alignment.CenterVertically, modifier = Modifier.padding(start = 16.dp)) {
         val imageModifier = Modifier.size(48.dp).clickable(onClick = {}).clip(shape = CircleShape)
 
-        val chatPhoto = repository.chatImage(chat).collectAsState(initial = null)
+        val chatPhoto =
+            repository.chats.chatImage(chat)
+                .collectAsState(initial = chat.photo?.small?.local?.path)
         NetworkImage(
             url = chatPhoto.value,
             modifier = imageModifier,
@@ -100,7 +102,7 @@ private fun Long.toRelativeTimeSpan(): String =
 
 
 @Composable
-fun ClickableChatItem(repository: ChatsRepository, chat: TdApi.Chat, onClick: () -> Unit = {}) {
+fun ClickableChatItem(repository: Repository, chat: TdApi.Chat, onClick: () -> Unit = {}) {
     ChatItem(
         repository,
         chat,

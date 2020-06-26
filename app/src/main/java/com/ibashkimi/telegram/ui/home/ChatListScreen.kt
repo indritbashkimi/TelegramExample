@@ -14,20 +14,20 @@ import androidx.ui.res.stringResource
 import com.ibashkimi.telegram.Navigation
 import com.ibashkimi.telegram.R
 import com.ibashkimi.telegram.Screen
+import com.ibashkimi.telegram.data.Repository
 import com.ibashkimi.telegram.data.Response
 import com.ibashkimi.telegram.data.asResponse
-import com.ibashkimi.telegram.data.chats.ChatsRepository
 import org.drinkless.td.libcore.telegram.TdApi
 
 @Composable
-fun HomeScreen(chatsRepository: ChatsRepository) {
-    val chats = chatsRepository.getChats().asResponse().collectAsState()
+fun HomeScreen(repository: Repository) {
+    val chats = repository.chats.getChats().asResponse().collectAsState()
     when (val response = chats.value) {
         null -> {
             LoadingChats()
         }
         is Response.Success -> {
-            ChatsLoaded(chatsRepository, response.data)
+            ChatsLoaded(repository, response.data)
         }
         is Response.Error -> {
             LoadingChatsError()
@@ -45,7 +45,7 @@ private fun LoadingChats() {
 }
 
 @Composable
-private fun ChatsLoaded(repository: ChatsRepository, chats: List<TdApi.Chat>) {
+private fun ChatsLoaded(repository: Repository, chats: List<TdApi.Chat>) {
     Log.d("HomeScreen", "chat: $chats")
     AdapterList(chats) {
         ClickableChatItem(repository, it) {

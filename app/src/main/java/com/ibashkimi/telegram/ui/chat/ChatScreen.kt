@@ -17,23 +17,23 @@ import androidx.ui.material.ripple.ripple
 import androidx.ui.res.stringResource
 import androidx.ui.unit.dp
 import com.ibashkimi.telegram.R
+import com.ibashkimi.telegram.data.Repository
 import com.ibashkimi.telegram.data.Response
 import com.ibashkimi.telegram.data.asResponse
-import com.ibashkimi.telegram.data.messages.MessagesRepository
 import org.drinkless.td.libcore.telegram.TdApi
 
 @Composable
-fun ChatScreen(repository: MessagesRepository, chat: TdApi.Chat, modifier: Modifier = Modifier) {
-    val history = repository.getMessages(chat.id).asResponse().collectAsState()
+fun ChatScreen(repository: Repository, chat: TdApi.Chat, modifier: Modifier = Modifier) {
+    val history = repository.messages.getMessages(chat.id).asResponse().collectAsState()
     when (val response = history.value) {
         null -> {
             ChatLoading()
         }
         is Response.Success -> {
             Column(modifier = modifier + Modifier.fillMaxWidth()) {
-                ChatHistory(messages = response.data, modifier = Modifier.fillMaxWidth())
+                ChatHistory(repository, response.data, modifier = Modifier.fillMaxWidth())
                 MessageInput {
-                    repository.sendMessage()
+                    repository.messages.sendMessage()
                 }
             }
         }
@@ -57,10 +57,14 @@ fun ChatLoading(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ChatHistory(messages: List<TdApi.Message>, modifier: Modifier = Modifier) {
+fun ChatHistory(
+    repository: Repository,
+    messages: List<TdApi.Message>,
+    modifier: Modifier = Modifier
+) {
     AdapterList(data = messages) {
         MessageItem(
-            it, modifier = Modifier.padding(
+            repository, it, modifier = Modifier.padding(
                 start = 16.dp,
                 top = 8.dp,
                 end = 16.dp,
@@ -71,7 +75,11 @@ fun ChatHistory(messages: List<TdApi.Message>, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun MessageItem(message: TdApi.Message, modifier: Modifier = Modifier) {
+private fun MessageItem(
+    repository: Repository,
+    message: TdApi.Message,
+    modifier: Modifier = Modifier
+) {
     when (val content = message.content) {
         is TdApi.MessageText -> TextMessage(content, modifier)
         is TdApi.MessageVideo -> VideoMessage(content, modifier)

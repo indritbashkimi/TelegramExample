@@ -22,9 +22,7 @@ import com.ibashkimi.telegram.Navigation
 import com.ibashkimi.telegram.R
 import com.ibashkimi.telegram.Screen
 import com.ibashkimi.telegram.data.Authentication
-import com.ibashkimi.telegram.data.TelegramClient
-import com.ibashkimi.telegram.data.chats.ChatsRepository
-import com.ibashkimi.telegram.data.messages.MessagesRepository
+import com.ibashkimi.telegram.data.Repository
 import com.ibashkimi.telegram.ui.chat.ChatScreen
 import com.ibashkimi.telegram.ui.home.HomeScreen
 import com.ibashkimi.telegram.ui.login.WaitForCodeScreen
@@ -32,12 +30,12 @@ import com.ibashkimi.telegram.ui.login.WaitForNumberScreen
 import com.ibashkimi.telegram.ui.login.WaitForPasswordScreen
 
 @Composable
-fun MyApp(client: TelegramClient) {
+fun MyApp(repository: Repository) {
     val isDark = isSystemInDarkTheme()
     MaterialTheme(
         colors = if (isDark) darkColorPalette() else lightColorPalette()
     ) {
-        val authState = client.authState.collectAsState(Authentication.UNKNOWN)
+        val authState = repository.client.authState.collectAsState(Authentication.UNKNOWN)
         android.util.Log.d("MyApp", "auth state: ${authState.value}")
         when (authState.value) {
             Authentication.UNKNOWN -> {
@@ -47,7 +45,7 @@ fun MyApp(client: TelegramClient) {
                 )
             }
             Authentication.UNAUTHENTICATED -> {
-                client.startAuthentication()
+                repository.client.startAuthentication()
                 Text(
                     "Starting authentication",
                     modifier = Modifier.fillMaxWidth() + Modifier.wrapContentSize(Alignment.Center)
@@ -55,28 +53,28 @@ fun MyApp(client: TelegramClient) {
             }
             Authentication.WAIT_FOR_NUMBER -> {
                 WaitForNumberScreen {
-                    client.insertPhoneNumber(it)
+                    repository.client.insertPhoneNumber(it)
                 }
             }
             Authentication.WAIT_FOR_CODE -> {
                 WaitForCodeScreen {
-                    client.insertCode(it)
+                    repository.client.insertCode(it)
                 }
             }
             Authentication.WAIT_FOR_PASSWORD -> {
                 WaitForPasswordScreen {
-                    client.insertPassword(it)
+                    repository.client.insertPassword(it)
                 }
             }
             Authentication.AUTHENTICATED -> {
-                MainScreen()
+                MainScreen(repository)
             }
         }
     }
 }
 
 @Composable
-private fun MainScreen() {
+private fun MainScreen(repository: Repository) {
     val currentScreen = Navigation.currentScreen.collectAsState()
     val destination = currentScreen.value
     val title = destination.title
@@ -100,19 +98,19 @@ private fun MainScreen() {
             }
         },
         bodyContent = {
-            AppContent(destination, modifier = Modifier.fillMaxWidth())
+            AppContent(repository, destination, modifier = Modifier.fillMaxWidth())
         }
     )
 }
 
 @Composable
-private fun AppContent(screen: Screen, modifier: Modifier = Modifier) {
+private fun AppContent(repository: Repository, screen: Screen, modifier: Modifier = Modifier) {
     Surface(color = MaterialTheme.colors.background, modifier = modifier) {
         when (screen) {
             is Screen.ChatList -> {
-                HomeScreen(ChatsRepository(TelegramClient))
+                HomeScreen(repository)
             }
-            is Screen.Chat -> ChatScreen(MessagesRepository(TelegramClient), screen.chat)
+            is Screen.Chat -> ChatScreen(repository, screen.chat)
         }
     }
 }
