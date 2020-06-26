@@ -3,7 +3,7 @@ package com.ibashkimi.telegram.data
 import android.app.Application
 import android.os.Build
 import android.util.Log
-import com.ibashkimi.telegram.Configuration
+import com.ibashkimi.telegram.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -16,6 +16,14 @@ import org.drinkless.td.libcore.telegram.Client
 import org.drinkless.td.libcore.telegram.TdApi
 import java.util.*
 
+/*
+ * Go to https://my.telegram.org to obtain api id (integer) and api hash (string).
+ * Put those in values (for example in values/api_keys.xml):
+ * <resources>
+ *   <integer name="telegram_api_id">your integer api id</integer>
+ *   <string name="telegram_api_hash">your string api hash</string>
+ * </resources>
+ */
 @ExperimentalCoroutinesApi
 object TelegramClient : Client.ResultHandler {
 
@@ -73,8 +81,9 @@ object TelegramClient : Client.ResultHandler {
 
         doAsync {
             val tdLibParameters = TdApi.TdlibParameters().apply {
-                apiId = Configuration.API_ID
-                apiHash = Configuration.API_HASH
+                // Obtain application identifier hash for Telegram API access at https://my.telegram.org
+                apiId = application.resources.getInteger(R.integer.telegram_api_id)
+                apiHash = application.getString(R.string.telegram_api_hash)
                 useMessageDatabase = true
                 useSecretChats = true
                 systemLanguageCode = Locale.getDefault().language

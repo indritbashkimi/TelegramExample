@@ -7,7 +7,13 @@ A telegram client for android created using tdlib library and built with [Jetpac
 To try out this app, you need to: 
 * Install Canary version of Android Studio 4.0
 * Download the **tdlib** android library from [https://core.telegram.org/tdlib/tdlib.zip](https://core.telegram.org/tdlib/tdlib.zip) and extract the zip file to the root folder of the project
-* Obtain application identifier hash for Telegram API access at [https://my.telegram.org](https://my.telegram.org) and put them in Configuration.kt
+* Obtain application identifier hash for Telegram API access at [https://my.telegram.org](https://my.telegram.org) and store them in the android resources. For example in values/api_keys.xml:
+```
+<resources>
+    <integer name="telegram_api_id">your integer api id</integer>
+    <string name="telegram_api_hash">your string api hash</string>
+</resources>
+```
 
 This app is **work in progress**. Features implemented so far:
 - [x] Login
