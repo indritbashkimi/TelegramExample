@@ -5,7 +5,7 @@
 A telegram client for android created using tdlib library and built with [Jetpack Compose](https://developer.android.com/jetpack/compose).
 
 To try out this app, you need to: 
-* Install Canary version of Android Studio 4.0
+* Install the latest **Canary** of Android Studio
 * Download the **tdlib** android library from [https://core.telegram.org/tdlib/tdlib.zip](https://core.telegram.org/tdlib/tdlib.zip) and extract the zip file to the root folder of the project
 * Obtain application identifier hash for Telegram API access at [https://my.telegram.org](https://my.telegram.org) and store them in the android resources. For example in values/api_keys.xml:
 ```
