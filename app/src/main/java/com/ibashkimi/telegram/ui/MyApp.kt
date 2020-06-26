@@ -15,7 +15,6 @@ import androidx.ui.layout.wrapContentSize
 import androidx.ui.material.*
 import androidx.ui.material.icons.Icons
 import androidx.ui.material.icons.filled.ArrowBack
-import androidx.ui.material.ripple.ripple
 import androidx.ui.res.stringResource
 import androidx.ui.unit.dp
 import com.ibashkimi.telegram.Navigation
@@ -84,12 +83,11 @@ private fun MainScreen(repository: Repository) {
                 TopAppBar(title = { Text(stringResource(R.string.app_name)) })
             } else {
                 TopAppBar(
-                    title = { Text(title) },
+                    title = { Text(title, maxLines = 1) },
                     navigationIcon = {
                         Image(
-                            modifier = Modifier.clickable(onClick = { Navigation.pop() }) + Modifier.ripple() + Modifier.padding(
-                                16.dp
-                            ),
+                            modifier = Modifier.clickable(onClick = { Navigation.pop() })
+                                .padding(16.dp),
                             asset = Icons.Default.ArrowBack,
                             alignment = Alignment.Center,
                             colorFilter = ColorFilter.tint(MaterialTheme.colors.onPrimary)

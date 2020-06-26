@@ -5,21 +5,22 @@ import androidx.compose.collectAsState
 import androidx.compose.state
 import androidx.ui.core.Alignment
 import androidx.ui.core.Modifier
+import androidx.ui.core.clip
 import androidx.ui.foundation.*
+import androidx.ui.foundation.shape.corner.CircleShape
 import androidx.ui.graphics.ColorFilter
 import androidx.ui.layout.*
 import androidx.ui.material.Card
-import androidx.ui.material.Divider
 import androidx.ui.material.MaterialTheme
 import androidx.ui.material.icons.Icons
 import androidx.ui.material.icons.filled.Send
-import androidx.ui.material.ripple.ripple
 import androidx.ui.res.stringResource
 import androidx.ui.unit.dp
 import com.ibashkimi.telegram.R
 import com.ibashkimi.telegram.data.Repository
 import com.ibashkimi.telegram.data.Response
 import com.ibashkimi.telegram.data.asResponse
+import com.ibashkimi.telegram.ui.NetworkImage
 import org.drinkless.td.libcore.telegram.TdApi
 
 @Composable
@@ -27,12 +28,16 @@ fun ChatScreen(repository: Repository, chat: TdApi.Chat, modifier: Modifier = Mo
     val history = repository.messages.getMessages(chat.id).asResponse().collectAsState()
     when (val response = history.value) {
         null -> {
-            ChatLoading()
+            ChatLoading(modifier)
         }
         is Response.Success -> {
-            Column(modifier = modifier + Modifier.fillMaxWidth()) {
-                ChatHistory(repository, response.data, modifier = Modifier.fillMaxWidth())
-                MessageInput {
+            Stack(modifier = modifier.fillMaxWidth()) {
+                ChatHistory(
+                    repository,
+                    messages = response.data,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                MessageInput(modifier = Modifier.gravity(Alignment.BottomCenter)) {
                     repository.messages.sendMessage()
                 }
             }
@@ -41,7 +46,7 @@ fun ChatScreen(repository: Repository, chat: TdApi.Chat, modifier: Modifier = Mo
             Text(
                 text = "Cannot load messages",
                 style = MaterialTheme.typography.h5,
-                modifier = modifier + Modifier.fillMaxSize() + Modifier.wrapContentSize(Alignment.Center)
+                modifier = modifier.fillMaxSize().wrapContentSize(Alignment.Center)
             )
         }
     }
@@ -52,7 +57,7 @@ fun ChatLoading(modifier: Modifier = Modifier) {
     Text(
         text = stringResource(R.string.loading),
         style = MaterialTheme.typography.h5,
-        modifier = modifier + Modifier.fillMaxSize() + Modifier.wrapContentSize(Alignment.Center)
+        modifier = modifier.fillMaxSize().wrapContentSize(Alignment.Center)
     )
 }
 
@@ -62,15 +67,8 @@ fun ChatHistory(
     messages: List<TdApi.Message>,
     modifier: Modifier = Modifier
 ) {
-    AdapterList(data = messages) {
-        MessageItem(
-            repository, it, modifier = Modifier.padding(
-                start = 16.dp,
-                top = 8.dp,
-                end = 16.dp,
-                bottom = 8.dp
-            )
-        )
+    AdapterList(data = messages, modifier = modifier) {
+        MessageItem(repository, it)
     }
 }
 
@@ -80,41 +78,52 @@ private fun MessageItem(
     message: TdApi.Message,
     modifier: Modifier = Modifier
 ) {
-    when (val content = message.content) {
-        is TdApi.MessageText -> TextMessage(content, modifier)
-        is TdApi.MessageVideo -> VideoMessage(content, modifier)
-        is TdApi.MessageCall -> CallMessage(content, modifier)
-        is TdApi.MessageAudio -> AudioMessage(content, modifier)
-        is TdApi.MessageSticker -> StickerMessage(content, modifier)
-        is TdApi.MessageAnimation -> AnimationMessage(content, modifier)
-        else -> Text(message::class.java.simpleName)
+    Row(
+        verticalGravity = Alignment.Bottom,
+        modifier = Modifier.clickable(onClick = {}) + modifier.fillMaxWidth()
+    ) {
+        val userPhoto = repository.users.getUser(message.senderUserId).collectAsState()
+        val imageModifier = Modifier.padding(16.dp).size(40.dp).clip(shape = CircleShape)
+        NetworkImage(
+            url = userPhoto.value?.profilePhoto?.small?.local?.path,
+            modifier = imageModifier,
+            placeHolderRes = null
+        )
+        Card(
+            elevation = 1.dp,
+            modifier = Modifier.padding(0.dp, 4.dp, 8.dp, 4.dp)
+        ) {
+            val messageModifier = Modifier.padding(8.dp)
+            when (val content = message.content) {
+                is TdApi.MessageText -> TextMessage(content, messageModifier)
+                is TdApi.MessageVideo -> VideoMessage(content, messageModifier)
+                is TdApi.MessageCall -> CallMessage(content, messageModifier)
+                is TdApi.MessageAudio -> AudioMessage(content, messageModifier)
+                is TdApi.MessageSticker -> StickerMessage(content, messageModifier)
+                is TdApi.MessageAnimation -> AnimationMessage(content, messageModifier)
+                else -> Text(message::class.java.simpleName)
+            }
+        }
     }
 }
 
 @Composable
 fun MessageInput(modifier: Modifier = Modifier, onEnter: (String) -> Unit) {
-    val input = state { TextFieldValue() }
-    Card(elevation = 4.dp, modifier = modifier + Modifier.fillMaxWidth()) {
-        Row(horizontalArrangement = Arrangement.End) {
-            Column(
-                modifier = Modifier.fillMaxWidth() + Modifier.padding(16.dp)
-            ) {
-                TextField(
-                    value = input.value,
-                    onValueChange = { input.value = it },
-                    textStyle = MaterialTheme.typography.body1
-                )
-                Divider(
-                    color = MaterialTheme.colors.onBackground,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-            Spacer(modifier = Modifier.padding(end = 16.dp))
+    Card(elevation = 8.dp, modifier = modifier.fillMaxWidth()) {
+        Row(verticalGravity = Alignment.CenterVertically) {
+            val input = state { TextFieldValue("Message") }
+            TextField(
+                value = input.value,
+                modifier = Modifier.weight(1.0f) + Modifier.padding(16.dp),
+                onValueChange = { input.value = it },
+                textStyle = MaterialTheme.typography.body1
+            )
             Image(
-                modifier = Modifier.clickable(onClick = { onEnter(input.value.text) }) + Modifier.ripple(),
+                modifier = Modifier.clickable(onClick = { onEnter(input.value.text) })
+                    .padding(16.dp).clip(CircleShape),
                 asset = Icons.Default.Send,
                 alignment = Alignment.Center,
-                colorFilter = ColorFilter.tint(MaterialTheme.colors.onPrimary)
+                colorFilter = ColorFilter.tint(MaterialTheme.colors.onBackground)
             )
         }
     }
