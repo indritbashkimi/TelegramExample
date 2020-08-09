@@ -1,22 +1,22 @@
 package com.ibashkimi.telegram.ui
 
-import androidx.compose.Composable
-import androidx.compose.collectAsState
-import androidx.ui.core.Alignment
-import androidx.ui.core.Modifier
-import androidx.ui.foundation.Image
-import androidx.ui.foundation.Text
-import androidx.ui.foundation.clickable
-import androidx.ui.foundation.isSystemInDarkTheme
-import androidx.ui.graphics.ColorFilter
-import androidx.ui.layout.fillMaxWidth
-import androidx.ui.layout.padding
-import androidx.ui.layout.wrapContentSize
-import androidx.ui.material.*
-import androidx.ui.material.icons.Icons
-import androidx.ui.material.icons.filled.ArrowBack
-import androidx.ui.res.stringResource
-import androidx.ui.unit.dp
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.Text
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.ibashkimi.telegram.Navigation
 import com.ibashkimi.telegram.R
 import com.ibashkimi.telegram.Screen
@@ -32,7 +32,7 @@ import com.ibashkimi.telegram.ui.login.WaitForPasswordScreen
 fun MyApp(repository: Repository) {
     val isDark = isSystemInDarkTheme()
     MaterialTheme(
-        colors = if (isDark) darkColorPalette() else lightColorPalette()
+        colors = if (isDark) darkColors() else lightColors()
     ) {
         val authState = repository.client.authState.collectAsState(Authentication.UNKNOWN)
         android.util.Log.d("MyApp", "auth state: ${authState.value}")

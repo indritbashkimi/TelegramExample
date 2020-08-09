@@ -1,15 +1,14 @@
 package com.ibashkimi.telegram.ui.login
 
-import androidx.compose.Composable
-import androidx.compose.state
-import androidx.ui.core.Alignment
-import androidx.ui.core.Modifier
-import androidx.ui.foundation.Text
-import androidx.ui.foundation.TextField
-import androidx.ui.input.TextFieldValue
-import androidx.ui.layout.*
-import androidx.ui.material.*
-import androidx.ui.unit.dp
+import androidx.compose.foundation.Text
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.state
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun WaitForNumberScreen(onEnter: (String) -> Unit) {
@@ -55,6 +54,7 @@ private fun AuthorizationScreen(title: String, message: String? = null, onEnter:
                     TextField(
                         value = phoneNumber.value,
                         onValueChange = { phoneNumber.value = it },
+                        label = { },
                         textStyle = MaterialTheme.typography.h5
                     )
                     Divider(
@@ -66,7 +66,7 @@ private fun AuthorizationScreen(title: String, message: String? = null, onEnter:
                     } else {
                         Text(message, modifier = Modifier.padding(16.dp))
                     }
-                    Button(modifier = Modifier.gravity(Alignment.End), text = {
+                    Button(modifier = Modifier.gravity(Alignment.End), content = {
                         Text("Enter")
                     }, onClick = {
                         onEnter(phoneNumber.value.text)

@@ -1,8 +1,8 @@
 package com.ibashkimi.telegram.ui.chat
 
-import androidx.compose.Composable
-import androidx.ui.core.Modifier
-import androidx.ui.foundation.Text
+import androidx.compose.foundation.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import org.drinkless.td.libcore.telegram.TdApi
 
 @Composable

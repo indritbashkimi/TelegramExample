@@ -2,7 +2,7 @@ package com.ibashkimi.telegram
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.ui.core.setContent
+import androidx.compose.ui.platform.setContent
 import com.ibashkimi.telegram.data.Repository
 import com.ibashkimi.telegram.data.TelegramClient
 import com.ibashkimi.telegram.data.UserRepository

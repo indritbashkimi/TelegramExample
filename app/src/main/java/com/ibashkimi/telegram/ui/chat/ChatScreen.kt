@@ -1,26 +1,26 @@
 package com.ibashkimi.telegram.ui.chat
 
-import androidx.compose.Composable
-import androidx.compose.collectAsState
-import androidx.compose.state
-import androidx.ui.core.Alignment
-import androidx.ui.core.Modifier
-import androidx.ui.core.clip
-import androidx.ui.foundation.Image
-import androidx.ui.foundation.Text
-import androidx.ui.foundation.TextField
-import androidx.ui.foundation.clickable
-import androidx.ui.foundation.lazy.LazyColumnItems
-import androidx.ui.foundation.shape.corner.CircleShape
-import androidx.ui.graphics.ColorFilter
-import androidx.ui.input.TextFieldValue
-import androidx.ui.layout.*
-import androidx.ui.material.Card
-import androidx.ui.material.MaterialTheme
-import androidx.ui.material.icons.Icons
-import androidx.ui.material.icons.filled.Send
-import androidx.ui.res.stringResource
-import androidx.ui.unit.dp
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.Text
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumnFor
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Card
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.TextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Send
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.state
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.unit.dp
 import com.ibashkimi.telegram.R
 import com.ibashkimi.telegram.data.Repository
 import com.ibashkimi.telegram.data.Response
@@ -31,7 +31,8 @@ import org.drinkless.td.libcore.telegram.TdApi
 
 @Composable
 fun ChatScreen(repository: Repository, chat: TdApi.Chat, modifier: Modifier = Modifier) {
-    val history = repository.messages.getMessages(chat.id).asResponse().collectAsState()
+    val history =
+        repository.messages.getMessages(chat.id).asResponse().collectAsState(initial = null)
     when (val response = history.value) {
         null -> {
             ChatLoading(modifier)
@@ -73,7 +74,7 @@ fun ChatHistory(
     messages: List<TdApi.Message>,
     modifier: Modifier = Modifier
 ) {
-    LazyColumnItems(items = messages, modifier = modifier) {
+    LazyColumnFor(items = messages, modifier = modifier) {
         MessageItem(repository, it)
     }
 }
@@ -123,6 +124,7 @@ fun MessageInput(modifier: Modifier = Modifier, onEnter: (String) -> Unit) {
                 value = input.value,
                 modifier = Modifier.weight(1.0f) + Modifier.padding(16.dp),
                 onValueChange = { input.value = it },
+                label = { },
                 textStyle = MaterialTheme.typography.body1
             )
             Image(

@@ -2,17 +2,17 @@ package com.ibashkimi.telegram.ui
 
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
-import androidx.compose.Composable
-import androidx.compose.onCommit
-import androidx.compose.state
+import androidx.compose.foundation.Image
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.onCommit
+import androidx.compose.runtime.state
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ImageAsset
+import androidx.compose.ui.graphics.asImageAsset
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.ContextAmbient
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
-import androidx.ui.core.ContentScale
-import androidx.ui.core.ContextAmbient
-import androidx.ui.core.Modifier
-import androidx.ui.foundation.Image
-import androidx.ui.graphics.ImageAsset
-import androidx.ui.graphics.asImageAsset
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition

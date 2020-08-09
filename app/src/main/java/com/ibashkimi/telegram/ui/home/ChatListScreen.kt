@@ -1,18 +1,18 @@
 package com.ibashkimi.telegram.ui.home
 
 import android.util.Log
-import androidx.compose.Composable
-import androidx.compose.collectAsState
-import androidx.ui.core.Alignment
-import androidx.ui.core.Modifier
-import androidx.ui.foundation.Text
-import androidx.ui.foundation.lazy.LazyColumnItems
-import androidx.ui.layout.fillMaxSize
-import androidx.ui.layout.padding
-import androidx.ui.layout.wrapContentSize
-import androidx.ui.material.MaterialTheme
-import androidx.ui.res.stringResource
-import androidx.ui.unit.dp
+import androidx.compose.foundation.Text
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumnFor
+import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.ibashkimi.telegram.Navigation
 import com.ibashkimi.telegram.R
 import com.ibashkimi.telegram.Screen
@@ -54,7 +54,7 @@ private fun ChatsLoaded(
     modifier: Modifier = Modifier
 ) {
     Log.d("HomeScreen", "chat: $chats")
-    LazyColumnItems(chats, modifier = modifier.padding(start = 16.dp)) {
+    LazyColumnFor(chats, modifier = modifier.padding(start = 16.dp)) {
         ClickableChatItem(repository, it) {
             Navigation.navigateTo(Screen.Chat(it))
         }
