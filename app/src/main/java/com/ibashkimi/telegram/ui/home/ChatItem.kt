@@ -19,9 +19,8 @@ import androidx.compose.ui.draw.drawOpacity
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.ibashkimi.telegram.R
 import com.ibashkimi.telegram.data.Repository
-import com.ibashkimi.telegram.ui.NetworkImage
+import dev.chrisbanes.accompanist.coil.CoilImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.drinkless.td.libcore.telegram.TdApi
@@ -150,11 +149,12 @@ fun ChatItem(repository: Repository, chat: TdApi.Chat, modifier: Modifier = Modi
         val chatPhoto =
             repository.chats.chatImage(chat)
                 .collectAsState(chat.photo?.small?.local?.path, Dispatchers.IO)
-        NetworkImage(
-            url = chatPhoto.value,
-            modifier = imageModifier,
-            placeHolderRes = R.drawable.ic_person
-        )
+        chatPhoto.value?.let {
+            CoilImage(
+                data = it,
+                modifier = imageModifier
+            )
+        } ?: Box(imageModifier)
         Column(modifier = modifier.fillMaxWidth()) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 ChatTitle(chat.title, modifier = Modifier.weight(1.0f))

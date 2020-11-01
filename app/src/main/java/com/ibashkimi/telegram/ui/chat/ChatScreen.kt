@@ -26,7 +26,7 @@ import com.ibashkimi.telegram.R
 import com.ibashkimi.telegram.data.Repository
 import com.ibashkimi.telegram.data.Response
 import com.ibashkimi.telegram.data.asResponse
-import com.ibashkimi.telegram.ui.NetworkImage
+import dev.chrisbanes.accompanist.coil.CoilImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.drinkless.td.libcore.telegram.TdApi
@@ -94,11 +94,12 @@ private fun MessageItem(
         val userPhoto =
             repository.users.getUser(message.senderUserId).collectAsState(null, Dispatchers.IO)
         val imageModifier = Modifier.padding(16.dp).size(40.dp).clip(shape = CircleShape)
-        NetworkImage(
-            url = userPhoto.value?.profilePhoto?.small?.local?.path,
-            modifier = imageModifier,
-            placeHolderRes = null
-        )
+        userPhoto.value?.profilePhoto?.small?.local?.path?.let {
+            CoilImage(
+                data = it,
+                modifier = imageModifier,
+            )
+        } ?: Box(imageModifier)
         Card(
             elevation = 1.dp,
             modifier = Modifier.padding(0.dp, 4.dp, 8.dp, 4.dp)

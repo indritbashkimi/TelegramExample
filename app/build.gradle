@@ -63,5 +63,5 @@ dependencies {
     implementation "androidx.compose.material:material:$compose"
     implementation "androidx.compose.material:material-icons-extended:$compose"
 
-    implementation 'com.github.bumptech.glide:glide:4.11.0'
+    implementation "dev.chrisbanes.accompanist:accompanist-coil:0.3.2"
 }
