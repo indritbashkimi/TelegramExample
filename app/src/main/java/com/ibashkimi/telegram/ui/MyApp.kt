@@ -40,14 +40,14 @@ fun MyApp(repository: Repository) {
             Authentication.UNKNOWN -> {
                 Text(
                     "Waiting for client to initialize",
-                    modifier = Modifier.fillMaxWidth() + Modifier.wrapContentSize(Alignment.Center)
+                    modifier = Modifier.fillMaxWidth().wrapContentSize(Alignment.Center)
                 )
             }
             Authentication.UNAUTHENTICATED -> {
                 repository.client.startAuthentication()
                 Text(
                     "Starting authentication",
-                    modifier = Modifier.fillMaxWidth() + Modifier.wrapContentSize(Alignment.Center)
+                    modifier = Modifier.fillMaxWidth().wrapContentSize(Alignment.Center)
                 )
             }
             Authentication.WAIT_FOR_NUMBER -> {

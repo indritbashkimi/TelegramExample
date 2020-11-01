@@ -13,7 +13,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.state
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,20 +32,19 @@ import org.drinkless.td.libcore.telegram.TdApi
 
 @Composable
 fun ChatScreen(repository: Repository, chat: TdApi.Chat, modifier: Modifier = Modifier) {
-    val history =
-        repository.messages.getMessages(chat.id).asResponse().collectAsState(initial = null)
+    val history = repository.messages.getMessages(chat.id).asResponse().collectAsState(null)
     when (val response = history.value) {
         null -> {
             ChatLoading(modifier)
         }
         is Response.Success -> {
-            Stack(modifier = modifier.fillMaxWidth()) {
+            Box(modifier = modifier.fillMaxWidth()) {
                 ChatHistory(
                     repository,
                     messages = response.data,
                     modifier = Modifier.fillMaxWidth()
                 )
-                MessageInput(modifier = Modifier.gravity(Alignment.BottomCenter)) {
+                MessageInput(modifier = Modifier.align(Alignment.BottomCenter)) {
                     repository.messages.sendMessage()
                 }
             }
@@ -86,8 +86,8 @@ private fun MessageItem(
     modifier: Modifier = Modifier
 ) {
     Row(
-        verticalGravity = Alignment.Bottom,
-        modifier = Modifier.clickable(onClick = {}) + modifier.fillMaxWidth()
+        verticalAlignment = Alignment.Bottom,
+        modifier = Modifier.clickable(onClick = {}) then modifier.fillMaxWidth()
     ) {
         val userPhoto =
             repository.users.getUser(message.senderUserId).collectAsState(null, Dispatchers.IO)
@@ -118,11 +118,11 @@ private fun MessageItem(
 @Composable
 fun MessageInput(modifier: Modifier = Modifier, onEnter: (String) -> Unit) {
     Card(elevation = 8.dp, modifier = modifier.fillMaxWidth()) {
-        Row(verticalGravity = Alignment.CenterVertically) {
-            val input = state { TextFieldValue("Message") }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            val input = remember { mutableStateOf(TextFieldValue("Message")) }
             TextField(
                 value = input.value,
-                modifier = Modifier.weight(1.0f) + Modifier.padding(16.dp),
+                modifier = Modifier.weight(1.0f).padding(16.dp),
                 onValueChange = { input.value = it },
                 label = { },
                 textStyle = MaterialTheme.typography.body1

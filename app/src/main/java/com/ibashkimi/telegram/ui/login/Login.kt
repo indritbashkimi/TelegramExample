@@ -4,7 +4,8 @@ import androidx.compose.foundation.Text
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.state
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
@@ -37,7 +38,7 @@ fun WaitForPasswordScreen(onEnter: (String) -> Unit) {
 
 @Composable
 private fun AuthorizationScreen(title: String, message: String? = null, onEnter: (String) -> Unit) {
-    val executed = state { false }
+    val executed = remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
             TopAppBar(title = { Text(title) })
@@ -46,7 +47,7 @@ private fun AuthorizationScreen(title: String, message: String? = null, onEnter:
             if (executed.value) {
                 CircularProgressIndicator()
             } else {
-                val phoneNumber = state { TextFieldValue() }
+                val phoneNumber = remember { mutableStateOf(TextFieldValue()) }
                 Column(
                     modifier = Modifier.padding(16.dp),
                     verticalArrangement = Arrangement.Center
@@ -66,12 +67,12 @@ private fun AuthorizationScreen(title: String, message: String? = null, onEnter:
                     } else {
                         Text(message, modifier = Modifier.padding(16.dp))
                     }
-                    Button(modifier = Modifier.gravity(Alignment.End), content = {
-                        Text("Enter")
-                    }, onClick = {
+                    Button(onClick = {
                         onEnter(phoneNumber.value.text)
                         executed.value = true
-                    })
+                    }, modifier = Modifier.align(Alignment.End)) {
+                        Text("Enter")
+                    }
                 }
             }
         }

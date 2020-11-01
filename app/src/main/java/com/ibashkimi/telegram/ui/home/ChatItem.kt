@@ -142,7 +142,7 @@ fun ChatTime(text: String, modifier: Modifier = Modifier) {
 
 @Composable
 fun ChatItem(repository: Repository, chat: TdApi.Chat, modifier: Modifier = Modifier) {
-    Row(verticalGravity = Alignment.CenterVertically) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
         val imageModifier = Modifier.size(48.dp).clip(shape = CircleShape)
 
         val chatPhoto =
@@ -154,7 +154,7 @@ fun ChatItem(repository: Repository, chat: TdApi.Chat, modifier: Modifier = Modi
             placeHolderRes = R.drawable.ic_person
         )
         Column(modifier = modifier.fillMaxWidth()) {
-            Row(verticalGravity = Alignment.CenterVertically) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 ChatTitle(chat.title, modifier = Modifier.weight(1.0f))
                 chat.lastMessage?.date?.toLong()?.let { it * 1000 }?.let {
                     ChatTime(it.toRelativeTimeSpan(), modifier = Modifier.drawOpacity(0.6f))
