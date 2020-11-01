@@ -28,6 +28,7 @@ import com.ibashkimi.telegram.data.Response
 import com.ibashkimi.telegram.data.asResponse
 import com.ibashkimi.telegram.ui.NetworkImage
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.drinkless.td.libcore.telegram.TdApi
 
 @Composable
@@ -79,6 +80,7 @@ fun ChatHistory(
     }
 }
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @Composable
 private fun MessageItem(
     repository: Repository,

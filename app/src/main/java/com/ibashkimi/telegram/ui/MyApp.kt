@@ -27,6 +27,7 @@ import com.ibashkimi.telegram.ui.home.HomeScreen
 import com.ibashkimi.telegram.ui.login.WaitForCodeScreen
 import com.ibashkimi.telegram.ui.login.WaitForNumberScreen
 import com.ibashkimi.telegram.ui.login.WaitForPasswordScreen
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @Composable
 fun MyApp(repository: Repository) {
@@ -72,6 +73,7 @@ fun MyApp(repository: Repository) {
     }
 }
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @Composable
 private fun MainScreen(repository: Repository) {
     val currentScreen = Navigation.currentScreen.collectAsState()

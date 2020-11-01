@@ -23,6 +23,7 @@ import com.ibashkimi.telegram.R
 import com.ibashkimi.telegram.data.Repository
 import com.ibashkimi.telegram.ui.NetworkImage
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.drinkless.td.libcore.telegram.TdApi
 
 @Composable
@@ -140,6 +141,7 @@ fun ChatTime(text: String, modifier: Modifier = Modifier) {
     )
 }
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @Composable
 fun ChatItem(repository: Repository, chat: TdApi.Chat, modifier: Modifier = Modifier) {
     Row(verticalAlignment = Alignment.CenterVertically) {

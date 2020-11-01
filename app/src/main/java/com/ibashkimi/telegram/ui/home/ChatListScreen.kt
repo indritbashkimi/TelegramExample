@@ -20,8 +20,10 @@ import com.ibashkimi.telegram.data.Repository
 import com.ibashkimi.telegram.data.Response
 import com.ibashkimi.telegram.data.asResponse
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.drinkless.td.libcore.telegram.TdApi
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @Composable
 fun HomeScreen(repository: Repository, modifier: Modifier = Modifier) {
     val chats = repository.chats.getChats().asResponse().collectAsState(null, Dispatchers.IO)

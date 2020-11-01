@@ -9,12 +9,14 @@ import com.ibashkimi.telegram.data.UserRepository
 import com.ibashkimi.telegram.data.chats.ChatsRepository
 import com.ibashkimi.telegram.data.messages.MessagesRepository
 import com.ibashkimi.telegram.ui.MyApp
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 
 class MainActivity : AppCompatActivity() {
 
     private var client: TelegramClient? = null
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {

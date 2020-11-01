@@ -1,11 +1,13 @@
 package com.ibashkimi.telegram.data.messages
 
 import com.ibashkimi.telegram.data.TelegramClient
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import org.drinkless.td.libcore.telegram.TdApi
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class MessagesRepository(private val client: TelegramClient) {
 
     fun getMessages(chatId: Long): Flow<List<TdApi.Message>> = callbackFlow {
