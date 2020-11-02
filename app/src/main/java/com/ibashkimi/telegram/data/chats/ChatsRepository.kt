@@ -1,5 +1,6 @@
 package com.ibashkimi.telegram.data.chats
 
+import androidx.paging.PagingSource
 import com.ibashkimi.telegram.data.TelegramClient
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
@@ -9,8 +10,8 @@ import org.drinkless.td.libcore.telegram.TdApi
 @ExperimentalCoroutinesApi
 class ChatsRepository(private val client: TelegramClient) {
 
-    private fun getChatIds(): Flow<LongArray> = callbackFlow {
-        client.client.send(TdApi.GetChats(TdApi.ChatListMain(), Long.MAX_VALUE, 0, 50)) {
+    private fun getChatIds(offsetOrder: Long = Long.MAX_VALUE, limit: Int): Flow<LongArray> = callbackFlow {
+        client.client.send(TdApi.GetChats(TdApi.ChatListMain(), offsetOrder, 0, limit)) {
             when (it.constructor) {
                 TdApi.Chats.CONSTRUCTOR -> {
                     offer((it as TdApi.Chats).chatIds)
@@ -27,13 +28,15 @@ class ChatsRepository(private val client: TelegramClient) {
         awaitClose { }
     }
 
-    fun getChats(): Flow<List<TdApi.Chat>> = getChatIds()
+    fun getChats(offsetOrder: Long = Long.MAX_VALUE, limit: Int): Flow<List<TdApi.Chat>> = getChatIds(offsetOrder, limit)
         .map { ids -> ids.map { getChat(it) } }
         .flatMapLatest { chatsFlow ->
             combine(chatsFlow) { chats ->
                 chats.toList()
             }
         }
+
+    fun getChatsPaged(): PagingSource<Long, TdApi.Chat> = ChatsPagingSource(this)
 
     fun getChat(chatId: Long): Flow<TdApi.Chat> = callbackFlow {
         client.client.send(TdApi.GetChat(chatId)) {
