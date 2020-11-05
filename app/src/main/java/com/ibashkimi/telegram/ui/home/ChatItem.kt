@@ -110,7 +110,7 @@ fun ChatSummary(chat: TdApi.Chat, modifier: Modifier = Modifier) {
                 "${(it as TdApi.MessageChatDeleteMember).userId} left the chat",
                 modifier = modifier
             )
-            else -> it::class.java.simpleName
+            else -> Text(it::class.java.simpleName)
         }
     }
 }
