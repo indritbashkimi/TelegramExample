@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.ui.tooling.preview.Preview
 
 @Composable
 fun WaitForNumberScreen(onEnter: (String) -> Unit) {
@@ -55,17 +56,13 @@ private fun AuthorizationScreen(title: String, message: String? = null, onEnter:
                     TextField(
                         value = phoneNumber.value,
                         onValueChange = { phoneNumber.value = it },
-                        label = { },
+                        modifier = Modifier.fillMaxWidth(),
                         textStyle = MaterialTheme.typography.h5
-                    )
-                    Divider(
-                        color = MaterialTheme.colors.onBackground,
-                        modifier = Modifier.fillMaxWidth()
                     )
                     if (message == null) {
                         Spacer(modifier = Modifier.preferredHeight(16.dp))
                     } else {
-                        Text(message, modifier = Modifier.padding(16.dp))
+                        Text(message, modifier = Modifier.padding(vertical = 16.dp))
                     }
                     Button(onClick = {
                         onEnter(phoneNumber.value.text)
@@ -77,4 +74,10 @@ private fun AuthorizationScreen(title: String, message: String? = null, onEnter:
             }
         }
     )
+}
+
+@Preview
+@Composable
+fun AuthorizationScreenPreview() {
+    WaitForNumberScreen {}
 }
