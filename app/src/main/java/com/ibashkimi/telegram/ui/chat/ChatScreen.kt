@@ -13,10 +13,7 @@ import androidx.compose.material.icons.filled.Gif
 import androidx.compose.material.icons.outlined.AttachFile
 import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material.icons.outlined.Send
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,6 +29,7 @@ import com.ibashkimi.telegram.data.asResponse
 import dev.chrisbanes.accompanist.coil.CoilImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import org.drinkless.td.libcore.telegram.TdApi
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -80,13 +78,27 @@ fun ChatContent(chatId: Long, repository: Repository, modifier: Modifier = Modif
                     messages = response.data,
                     modifier = Modifier.fillMaxWidth().weight(1.0f)
                 )
+                val input = remember { mutableStateOf(TextFieldValue("")) }
+                val scope = rememberCoroutineScope()
                 MessageInput(
+                    input = input,
                     insertGif = {
                         // TODO
                     }, attachFile = {
                         // todo
                     }, sendMessage = {
-                        repository.messages.sendMessage()
+                        scope.launch {
+                            repository.messages.sendMessage(
+                                chatId = chatId,
+                                inputMessageContent = TdApi.InputMessageText(
+                                    TdApi.FormattedText(
+                                        it,
+                                        emptyArray()
+                                    ), false, false
+                                )
+                            ).await()
+                            input.value = TextFieldValue()
+                        }
                     })
             }
         }
@@ -161,12 +173,12 @@ private fun MessageItem(
 @Composable
 fun MessageInput(
     modifier: Modifier = Modifier,
-    insertGif: () -> Unit,
-    attachFile: () -> Unit,
-    sendMessage: (String) -> Unit
+    input: MutableState<TextFieldValue> = remember { mutableStateOf(TextFieldValue("")) },
+    insertGif: () -> Unit = {},
+    attachFile: () -> Unit = {},
+    sendMessage: (String) -> Unit = {}
 ) {
     Surface(modifier, color = MaterialTheme.colors.surface, elevation = 6.dp) {
-        val input = remember { mutableStateOf(TextFieldValue("")) }
         TextField(
             value = input.value,
             modifier = Modifier.fillMaxWidth(),
