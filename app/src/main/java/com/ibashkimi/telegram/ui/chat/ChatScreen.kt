@@ -6,10 +6,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumnFor
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.TextField
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -22,6 +21,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.ibashkimi.telegram.R
 import com.ibashkimi.telegram.data.Repository
 import com.ibashkimi.telegram.data.Response
@@ -31,9 +31,41 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.drinkless.td.libcore.telegram.TdApi
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @Composable
-fun ChatScreen(repository: Repository, chat: TdApi.Chat, modifier: Modifier = Modifier) {
-    val history = repository.messages.getMessages(chat.id).asResponse().collectAsState(null)
+fun ChatScreen(
+    repository: Repository,
+    chatId: Long,
+    navController: NavController,
+    modifier: Modifier = Modifier
+) {
+    val chat = repository.chats.getChat(chatId).collectAsState(null)
+    Scaffold(
+        modifier = modifier,
+        topBar = {
+            TopAppBar(
+                title = { Text(chat.value?.title ?: "", maxLines = 1) },
+                navigationIcon = {
+                    IconButton(
+                        onClick = { navController.navigateUp() },
+                        icon = {
+                            Image(
+                                asset = Icons.Default.ArrowBack,
+                                colorFilter = ColorFilter.tint(MaterialTheme.colors.onPrimary)
+                            )
+                        }
+                    )
+                })
+        },
+        bodyContent = {
+            ChatContent(chatId, repository)
+        }
+    )
+}
+
+@Composable
+fun ChatContent(chatId: Long, repository: Repository, modifier: Modifier = Modifier) {
+    val history = repository.messages.getMessages(chatId).asResponse().collectAsState(null)
     when (val response = history.value) {
         null -> {
             ChatLoading(modifier)

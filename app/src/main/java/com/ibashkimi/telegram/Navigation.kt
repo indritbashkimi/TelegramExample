@@ -1,45 +1,25 @@
 package com.ibashkimi.telegram
 
-import kotlinx.coroutines.flow.MutableStateFlow
-import org.drinkless.td.libcore.telegram.TdApi
+import androidx.navigation.NavBackStackEntry
 
 /**
  * Class defining the screens we have in the app: home, article details and interests
  */
-sealed class Screen(val title: String) {
-    object ChatList : Screen("Telegram")
-    class Chat(val chat: TdApi.Chat) : Screen(chat.title)
-}
+sealed class Screen(val route: String) {
 
-object Navigation {
+    object Home : Screen("home")
 
-    private val stack = ArrayList<Screen>().apply { add(Screen.ChatList) }
+    object EnterPhoneNumber : Screen("login/enterPhoneNumber")
 
-    val currentScreen = MutableStateFlow<Screen>(Screen.ChatList)
+    object EnterCode : Screen("login/enterCode")
 
-    fun push(destination: Screen) {
-        stack.add(destination)
-        stackChanged()
-    }
+    object EnterPassword : Screen("login/enterPassword")
 
-    fun pop(): Boolean {
-        if (stack.size < 2)
-            return false
-        stack.removeAt(stack.size - 1)
-        stackChanged()
-        return true
-    }
-
-    fun navigateTo(destination: Screen) {
-        push(destination)
-    }
-
-    fun replace(destination: Screen) {
-        stack[stack.size - 1] = destination
-        stackChanged()
-    }
-
-    private fun stackChanged() {
-        currentScreen.value = stack.last()
+    object Chat : Screen("chat/{chatId}") {
+        fun buildRoute(chatId: Long): String = "chat/${chatId}"
+        fun getChatId(entry: NavBackStackEntry): Long =
+            entry.arguments!!.getString("chatId")?.toLong()
+                ?: throw IllegalArgumentException("chatId argument missing.")
     }
 }
+

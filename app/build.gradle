@@ -63,6 +63,7 @@ dependencies {
     implementation "androidx.compose.material:material:$compose"
     implementation "androidx.compose.material:material-icons-extended:$compose"
 
+    implementation "androidx.navigation:navigation-compose:1.0.0-alpha01"
     implementation "androidx.paging:paging-compose:1.0.0-alpha01"
     implementation "dev.chrisbanes.accompanist:accompanist-coil:0.3.2"
 }
