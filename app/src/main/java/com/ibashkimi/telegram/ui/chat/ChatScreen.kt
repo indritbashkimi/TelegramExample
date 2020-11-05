@@ -9,7 +9,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.filled.Gif
+import androidx.compose.material.icons.outlined.AttachFile
+import androidx.compose.material.icons.outlined.Mic
+import androidx.compose.material.icons.outlined.Send
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -71,15 +74,20 @@ fun ChatContent(chatId: Long, repository: Repository, modifier: Modifier = Modif
             ChatLoading(modifier)
         }
         is Response.Success -> {
-            Box(modifier = modifier.fillMaxWidth()) {
+            Column(modifier = modifier.fillMaxWidth()) {
                 ChatHistory(
                     repository,
                     messages = response.data,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth().weight(1.0f)
                 )
-                MessageInput(modifier = Modifier.align(Alignment.BottomCenter)) {
-                    repository.messages.sendMessage()
-                }
+                MessageInput(
+                    insertGif = {
+                        // TODO
+                    }, attachFile = {
+                        // todo
+                    }, sendMessage = {
+                        repository.messages.sendMessage()
+                    })
             }
         }
         is Response.Error -> {
@@ -151,24 +159,56 @@ private fun MessageItem(
 }
 
 @Composable
-fun MessageInput(modifier: Modifier = Modifier, onEnter: (String) -> Unit) {
-    Card(elevation = 8.dp, modifier = modifier.fillMaxWidth()) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            val input = remember { mutableStateOf(TextFieldValue("Message")) }
-            TextField(
-                value = input.value,
-                modifier = Modifier.weight(1.0f).padding(16.dp),
-                onValueChange = { input.value = it },
-                label = { },
-                textStyle = MaterialTheme.typography.body1
-            )
-            Image(
-                modifier = Modifier.clickable(onClick = { onEnter(input.value.text) })
-                    .padding(16.dp).clip(CircleShape),
-                asset = Icons.Default.Send,
-                alignment = Alignment.Center,
-                colorFilter = ColorFilter.tint(MaterialTheme.colors.onBackground)
-            )
-        }
+fun MessageInput(
+    modifier: Modifier = Modifier,
+    insertGif: () -> Unit,
+    attachFile: () -> Unit,
+    sendMessage: (String) -> Unit
+) {
+    Surface(modifier, color = MaterialTheme.colors.surface, elevation = 6.dp) {
+        val input = remember { mutableStateOf(TextFieldValue("")) }
+        TextField(
+            value = input.value,
+            modifier = Modifier.fillMaxWidth(),
+            onValueChange = { input.value = it },
+            textStyle = MaterialTheme.typography.body1,
+            placeholder = {
+                Text("Message")
+            },
+            leadingIcon = {
+                IconButton(onClick = insertGif) {
+                    Image(
+                        asset = Icons.Default.Gif,
+                        colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface)
+                    )
+                }
+            },
+            trailingIcon = {
+                if (input.value.text.isEmpty()) {
+                    Row {
+                        IconButton(onClick = attachFile) {
+                            Image(
+                                asset = Icons.Outlined.AttachFile,
+                                colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface)
+                            )
+                        }
+                        IconButton(onClick = { }) {
+                            Image(
+                                asset = Icons.Outlined.Mic,
+                                colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface)
+                            )
+                        }
+                    }
+                } else {
+                    IconButton(onClick = { sendMessage(input.value.text) }) {
+                        Image(
+                            asset = Icons.Outlined.Send,
+                            colorFilter = ColorFilter.tint(MaterialTheme.colors.secondary)
+                        )
+                    }
+                }
+            },
+            backgroundColor = MaterialTheme.colors.surface
+        )
     }
 }
