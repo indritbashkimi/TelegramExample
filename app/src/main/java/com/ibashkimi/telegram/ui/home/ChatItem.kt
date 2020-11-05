@@ -3,9 +3,13 @@ package com.ibashkimi.telegram.ui.home
 import android.text.format.DateUtils
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.Text
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.ListItem
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Mic
@@ -16,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawOpacity
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -143,28 +148,35 @@ fun ChatTime(text: String, modifier: Modifier = Modifier) {
 @OptIn(ExperimentalCoroutinesApi::class)
 @Composable
 fun ChatItem(repository: Repository, chat: TdApi.Chat, modifier: Modifier = Modifier) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        val imageModifier = Modifier.size(48.dp).clip(shape = CircleShape)
-
-        val chatPhoto =
-            repository.chats.chatImage(chat)
-                .collectAsState(chat.photo?.small?.local?.path, Dispatchers.IO)
-        chatPhoto.value?.let {
-            CoilImage(
-                data = it,
-                modifier = imageModifier
-            )
-        } ?: Box(imageModifier)
-        Column(modifier = modifier.fillMaxWidth()) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                ChatTitle(chat.title, modifier = Modifier.weight(1.0f))
-                chat.lastMessage?.date?.toLong()?.let { it * 1000 }?.let {
-                    ChatTime(it.toRelativeTimeSpan(), modifier = Modifier.drawOpacity(0.6f))
-                }
+    ListItem(modifier,
+        icon = {
+            ChatImage(repository, chat)
+        },
+        secondaryText = {
+            ChatSummary(chat)
+        }) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            ChatTitle(chat.title, modifier = Modifier.weight(1.0f))
+            chat.lastMessage?.date?.toLong()?.let { it * 1000 }?.let {
+                ChatTime(it.toRelativeTimeSpan(), modifier = Modifier.drawOpacity(0.6f))
             }
-            ChatSummary(chat, modifier = Modifier.drawOpacity(0.6f))
         }
     }
+}
+
+@OptIn(ExperimentalCoroutinesApi::class)
+@Composable
+fun ChatImage(repository: Repository, chat: TdApi.Chat) {
+    val imageModifier = Modifier.clip(shape = CircleShape).size(48.dp)
+    val chatPhoto =
+        repository.chats.chatImage(chat)
+            .collectAsState(chat.photo?.small?.local?.path, Dispatchers.IO)
+    chatPhoto.value?.let {
+        CoilImage(
+            data = it,
+            modifier = imageModifier
+        )
+    } ?: Box(imageModifier.background(Color.LightGray))
 }
 
 private fun Long.toRelativeTimeSpan(): String =
@@ -184,18 +196,4 @@ private fun Int.toTime(): String {
         hours == 0L -> String.format("%02d:%02d", minutes, seconds)
         else -> String.format("%02d:%02d:%02d", hours, minutes, seconds)
     }
-}
-
-@Composable
-fun ClickableChatItem(
-    repository: Repository,
-    chat: TdApi.Chat,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit = {}
-) {
-    ChatItem(
-        repository,
-        chat,
-        modifier = modifier.clickable(onClick = onClick).padding(16.dp, 8.dp, 16.dp, 8.dp)
-    )
 }
