@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val viewModel: MainViewModel = viewModel()
-            TelegramApp(viewModel)
+            TelegramApp(this, viewModel)
         }
     }
 }

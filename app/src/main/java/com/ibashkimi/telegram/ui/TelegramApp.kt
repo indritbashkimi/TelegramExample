@@ -1,13 +1,14 @@
 package com.ibashkimi.telegram.ui
 
+import android.app.Activity
 import androidx.compose.foundation.Text
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -25,14 +26,13 @@ import com.ibashkimi.telegram.ui.home.HomeContent
 import com.ibashkimi.telegram.ui.login.WaitForCodeScreen
 import com.ibashkimi.telegram.ui.login.WaitForNumberScreen
 import com.ibashkimi.telegram.ui.login.WaitForPasswordScreen
+import com.ibashkimi.telegram.ui.theme.TelegramTheme
 import kotlinx.coroutines.launch
 
 @Composable
-fun TelegramApp(viewModel: MainViewModel) {
-    val isDark = isSystemInDarkTheme()
-    MaterialTheme(
-        colors = if (isDark) darkColors() else lightColors()
-    ) {
+fun TelegramApp(activity: Activity, viewModel: MainViewModel) {
+    TelegramTheme {
+        activity.window.statusBarColor = MaterialTheme.colors.primaryVariant.toArgb()
         val navController = rememberNavController()
         navHost(navController, viewModel)
         observeAuthState(navController, viewModel)
