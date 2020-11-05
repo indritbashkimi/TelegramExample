@@ -28,7 +28,7 @@ import com.ibashkimi.telegram.ui.login.WaitForPasswordScreen
 import kotlinx.coroutines.launch
 
 @Composable
-fun MyApp(viewModel: MainViewModel) {
+fun TelegramApp(viewModel: MainViewModel) {
     val isDark = isSystemInDarkTheme()
     MaterialTheme(
         colors = if (isDark) darkColors() else lightColors()
