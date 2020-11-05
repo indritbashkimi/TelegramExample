@@ -29,6 +29,7 @@ import dev.chrisbanes.accompanist.coil.CoilImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.drinkless.td.libcore.telegram.TdApi
+import java.io.File
 
 @Composable
 fun ChatTitle(text: String, modifier: Modifier = Modifier) {
@@ -173,7 +174,7 @@ fun ChatImage(repository: Repository, chat: TdApi.Chat) {
             .collectAsState(chat.photo?.small?.local?.path, Dispatchers.IO)
     chatPhoto.value?.let {
         CoilImage(
-            data = it,
+            data = File(it),
             modifier = imageModifier
         )
     } ?: Box(imageModifier.background(Color.LightGray))

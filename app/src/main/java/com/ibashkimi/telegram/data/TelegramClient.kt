@@ -4,13 +4,12 @@ import android.app.Application
 import android.os.Build
 import android.util.Log
 import com.ibashkimi.telegram.R
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.callbackFlow
 import org.drinkless.td.libcore.telegram.Client
 import org.drinkless.td.libcore.telegram.TdApi
 import java.util.*
@@ -23,6 +22,7 @@ import java.util.*
  *   <string name="telegram_api_hash">your string api hash</string>
  * </resources>
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 class TelegramClient(val application: Application) : Client.ResultHandler {
 
     private val TAG = TelegramClient::class.java.simpleName
@@ -204,17 +204,18 @@ class TelegramClient(val application: Application) : Client.ResultHandler {
         }
     }
 
-    fun downloadFile(fileId: Int): Flow<Unit> = flow {
+    fun downloadFile(fileId: Int): Flow<Unit> = callbackFlow {
         client.send(TdApi.DownloadFile(fileId, 1, 0, 0, true)) {
             when (it.constructor) {
                 TdApi.Ok.CONSTRUCTOR -> {
-
+                    offer(Unit)
                 }
                 else -> {
-                    error("")
+                    cancel("", Exception(""))
+
                 }
             }
         }
-        emit(Unit)
+        awaitClose()
     }
 }
