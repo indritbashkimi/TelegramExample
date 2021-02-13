@@ -150,7 +150,8 @@ private fun MessageItem(
         modifier = Modifier.clickable(onClick = {}) then modifier.fillMaxWidth()
     ) {
         val userPhoto =
-            repository.users.getUser(message.senderUserId).collectAsState(null, Dispatchers.IO)
+            repository.users.getUser((message.sender as TdApi.MessageSenderUser).userId)
+            .collectAsState(null, Dispatchers.IO)
         val imageModifier = Modifier
             .padding(16.dp)
             .size(40.dp)

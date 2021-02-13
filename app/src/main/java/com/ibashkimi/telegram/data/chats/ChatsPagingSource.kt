@@ -24,7 +24,7 @@ class ChatsPagingSource(
             return LoadResult.Page(
                 data = chats,
                 prevKey = null,
-                nextKey = chats.lastOrNull()?.order
+                nextKey = chats.lastOrNull()?.positions?.firstOrNull()?.order
             )
 
         } catch (e: Exception) {

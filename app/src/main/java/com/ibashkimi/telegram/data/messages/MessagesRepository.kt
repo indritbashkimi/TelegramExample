@@ -48,12 +48,14 @@ class MessagesRepository(private val client: TelegramClient) {
 
     fun sendMessage(
         chatId: Long,
+        messageThreadId: Long = 0,
         replyToMessageId: Long = 0,
-        options: TdApi.SendMessageOptions = TdApi.SendMessageOptions(),
+        options: TdApi.MessageSendOptions = TdApi.MessageSendOptions(),
         inputMessageContent: TdApi.InputMessageContent
     ): Deferred<TdApi.Message> = sendMessage(
         TdApi.SendMessage(
             chatId,
+            messageThreadId,
             replyToMessageId,
             options,
             null,
