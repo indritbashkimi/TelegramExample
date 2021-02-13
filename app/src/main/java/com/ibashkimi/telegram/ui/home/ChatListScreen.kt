@@ -119,6 +119,8 @@ private fun LoadingChats(modifier: Modifier = Modifier) {
 @Composable
 private fun LoadingMore(modifier: Modifier = Modifier) {
     CircularProgressIndicator(
-        modifier = modifier.fillMaxWidth().wrapContentWidth(Alignment.CenterHorizontally)
+        modifier = modifier
+            .fillMaxWidth()
+            .wrapContentWidth(Alignment.CenterHorizontally)
     )
 }

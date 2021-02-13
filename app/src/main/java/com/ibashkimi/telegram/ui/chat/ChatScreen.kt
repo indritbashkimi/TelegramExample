@@ -74,7 +74,9 @@ fun ChatContent(chatId: Long, repository: Repository, modifier: Modifier = Modif
                 ChatHistory(
                     repository,
                     messages = response.data,
-                    modifier = Modifier.fillMaxWidth().weight(1.0f)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1.0f)
                 )
                 val input = remember { mutableStateOf(TextFieldValue("")) }
                 val scope = rememberCoroutineScope()
@@ -104,7 +106,9 @@ fun ChatContent(chatId: Long, repository: Repository, modifier: Modifier = Modif
             Text(
                 text = "Cannot load messages",
                 style = MaterialTheme.typography.h5,
-                modifier = modifier.fillMaxSize().wrapContentSize(Alignment.Center)
+                modifier = modifier
+                    .fillMaxSize()
+                    .wrapContentSize(Alignment.Center)
             )
         }
     }
@@ -115,7 +119,9 @@ fun ChatLoading(modifier: Modifier = Modifier) {
     Text(
         text = stringResource(R.string.loading),
         style = MaterialTheme.typography.h5,
-        modifier = modifier.fillMaxSize().wrapContentSize(Alignment.Center)
+        modifier = modifier
+            .fillMaxSize()
+            .wrapContentSize(Alignment.Center)
     )
 }
 
@@ -145,7 +151,10 @@ private fun MessageItem(
     ) {
         val userPhoto =
             repository.users.getUser(message.senderUserId).collectAsState(null, Dispatchers.IO)
-        val imageModifier = Modifier.padding(16.dp).size(40.dp).clip(shape = CircleShape)
+        val imageModifier = Modifier
+            .padding(16.dp)
+            .size(40.dp)
+            .clip(shape = CircleShape)
         userPhoto.value?.profilePhoto?.small?.local?.path?.let {
             CoilImage(
                 data = it,

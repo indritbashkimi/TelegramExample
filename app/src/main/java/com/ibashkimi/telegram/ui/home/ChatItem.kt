@@ -172,7 +172,9 @@ fun ChatItem(repository: Repository, chat: TdApi.Chat, modifier: Modifier = Modi
 @OptIn(ExperimentalCoroutinesApi::class)
 @Composable
 fun ChatImage(repository: Repository, chat: TdApi.Chat) {
-    val imageModifier = Modifier.clip(shape = CircleShape).size(48.dp)
+    val imageModifier = Modifier
+        .clip(shape = CircleShape)
+        .size(48.dp)
     val chatPhoto =
         repository.chats.chatImage(chat)
             .collectAsState(chat.photo?.small?.local?.path, Dispatchers.IO)

@@ -10,31 +10,33 @@ import org.drinkless.td.libcore.telegram.TdApi
 @ExperimentalCoroutinesApi
 class ChatsRepository(private val client: TelegramClient) {
 
-    private fun getChatIds(offsetOrder: Long = Long.MAX_VALUE, limit: Int): Flow<LongArray> = callbackFlow {
-        client.client.send(TdApi.GetChats(TdApi.ChatListMain(), offsetOrder, 0, limit)) {
-            when (it.constructor) {
-                TdApi.Chats.CONSTRUCTOR -> {
-                    offer((it as TdApi.Chats).chatIds)
+    private fun getChatIds(offsetOrder: Long = Long.MAX_VALUE, limit: Int): Flow<LongArray> =
+        callbackFlow {
+            client.client.send(TdApi.GetChats(TdApi.ChatListMain(), offsetOrder, 0, limit)) {
+                when (it.constructor) {
+                    TdApi.Chats.CONSTRUCTOR -> {
+                        offer((it as TdApi.Chats).chatIds)
+                    }
+                    TdApi.Error.CONSTRUCTOR -> {
+                        error("")
+                    }
+                    else -> {
+                        error("")
+                    }
                 }
-                TdApi.Error.CONSTRUCTOR -> {
-                    error("")
-                }
-                else -> {
-                    error("")
-                }
+                //close()
             }
-            //close()
+            awaitClose { }
         }
-        awaitClose { }
-    }
 
-    fun getChats(offsetOrder: Long = Long.MAX_VALUE, limit: Int): Flow<List<TdApi.Chat>> = getChatIds(offsetOrder, limit)
-        .map { ids -> ids.map { getChat(it) } }
-        .flatMapLatest { chatsFlow ->
-            combine(chatsFlow) { chats ->
-                chats.toList()
+    fun getChats(offsetOrder: Long = Long.MAX_VALUE, limit: Int): Flow<List<TdApi.Chat>> =
+        getChatIds(offsetOrder, limit)
+            .map { ids -> ids.map { getChat(it) } }
+            .flatMapLatest { chatsFlow ->
+                combine(chatsFlow) { chats ->
+                    chats.toList()
+                }
             }
-        }
 
     fun getChatsPaged(): PagingSource<Long, TdApi.Chat> = ChatsPagingSource(this)
 
