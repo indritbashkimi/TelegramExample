@@ -2,15 +2,16 @@ package com.ibashkimi.telegram.ui.home
 
 import android.text.format.DateUtils
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.Text
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ListItem
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Videocam
@@ -18,8 +19,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawOpacity
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
@@ -55,7 +56,8 @@ fun ChatSummary(chat: TdApi.Chat, modifier: Modifier = Modifier) {
                 val message = it as TdApi.MessageAudio
                 Row(modifier = modifier) {
                     Image(
-                        asset = Icons.Default.Mic,
+                        imageVector = Icons.Default.Mic,
+                        contentDescription = null,
                         alignment = Alignment.Center,
                         colorFilter = ColorFilter.tint(MaterialTheme.colors.primary)
                     )
@@ -78,7 +80,8 @@ fun ChatSummary(chat: TdApi.Chat, modifier: Modifier = Modifier) {
                 val message = it as TdApi.MessageVoiceNote
                 Row(modifier = modifier) {
                     Image(
-                        asset = Icons.Default.Mic,
+                        imageVector = Icons.Default.Mic,
+                        contentDescription = null,
                         alignment = Alignment.Center,
                         colorFilter = ColorFilter.tint(MaterialTheme.colors.primary)
                     )
@@ -92,7 +95,8 @@ fun ChatSummary(chat: TdApi.Chat, modifier: Modifier = Modifier) {
                 val message = it as TdApi.MessageVideoNote
                 Row(modifier = modifier) {
                     Image(
-                        asset = Icons.Default.Videocam,
+                        imageVector = Icons.Default.Videocam,
+                        contentDescription = null,
                         alignment = Alignment.Center,
                         colorFilter = ColorFilter.tint(MaterialTheme.colors.primary)
                     )
@@ -146,7 +150,7 @@ fun ChatTime(text: String, modifier: Modifier = Modifier) {
     )
 }
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun ChatItem(repository: Repository, chat: TdApi.Chat, modifier: Modifier = Modifier) {
     ListItem(modifier,
@@ -159,7 +163,7 @@ fun ChatItem(repository: Repository, chat: TdApi.Chat, modifier: Modifier = Modi
         Row(verticalAlignment = Alignment.CenterVertically) {
             ChatTitle(chat.title, modifier = Modifier.weight(1.0f))
             chat.lastMessage?.date?.toLong()?.let { it * 1000 }?.let {
-                ChatTime(it.toRelativeTimeSpan(), modifier = Modifier.drawOpacity(0.6f))
+                ChatTime(it.toRelativeTimeSpan(), modifier = Modifier.alpha(0.6f))
             }
         }
     }
@@ -175,6 +179,7 @@ fun ChatImage(repository: Repository, chat: TdApi.Chat) {
     chatPhoto.value?.let {
         CoilImage(
             data = File(it),
+            contentDescription = null,
             modifier = imageModifier
         )
     } ?: Box(imageModifier.background(Color.LightGray))

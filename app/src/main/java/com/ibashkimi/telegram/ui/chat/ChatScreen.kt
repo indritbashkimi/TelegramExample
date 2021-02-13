@@ -1,10 +1,10 @@
 package com.ibashkimi.telegram.ui.chat
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.Text
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumnFor
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -47,15 +47,13 @@ fun ChatScreen(
             TopAppBar(
                 title = { Text(chat.value?.title ?: "", maxLines = 1) },
                 navigationIcon = {
-                    IconButton(
-                        onClick = { navController.navigateUp() },
-                        icon = {
-                            Image(
-                                asset = Icons.Default.ArrowBack,
-                                colorFilter = ColorFilter.tint(MaterialTheme.colors.onPrimary)
-                            )
-                        }
-                    )
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Image(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = null,
+                            colorFilter = ColorFilter.tint(MaterialTheme.colors.onPrimary)
+                        )
+                    }
                 })
         },
         bodyContent = {
@@ -127,8 +125,10 @@ fun ChatHistory(
     messages: List<TdApi.Message>,
     modifier: Modifier = Modifier
 ) {
-    LazyColumnFor(items = messages, modifier = modifier) {
-        MessageItem(repository, it)
+    LazyColumn(modifier = modifier) {
+        items(messages) {
+            MessageItem(repository, it)
+        }
     }
 }
 
@@ -149,6 +149,7 @@ private fun MessageItem(
         userPhoto.value?.profilePhoto?.small?.local?.path?.let {
             CoilImage(
                 data = it,
+                contentDescription = null,
                 modifier = imageModifier,
             )
         } ?: Box(imageModifier)
@@ -190,7 +191,8 @@ fun MessageInput(
             leadingIcon = {
                 IconButton(onClick = insertGif) {
                     Image(
-                        asset = Icons.Default.Gif,
+                        imageVector = Icons.Default.Gif,
+                        contentDescription = null,
                         colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface)
                     )
                 }
@@ -200,13 +202,15 @@ fun MessageInput(
                     Row {
                         IconButton(onClick = attachFile) {
                             Image(
-                                asset = Icons.Outlined.AttachFile,
+                                imageVector = Icons.Outlined.AttachFile,
+                                contentDescription = null,
                                 colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface)
                             )
                         }
                         IconButton(onClick = { }) {
                             Image(
-                                asset = Icons.Outlined.Mic,
+                                imageVector = Icons.Outlined.Mic,
+                                contentDescription = null,
                                 colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface)
                             )
                         }
@@ -214,7 +218,8 @@ fun MessageInput(
                 } else {
                     IconButton(onClick = { sendMessage(input.value.text) }) {
                         Image(
-                            asset = Icons.Outlined.Send,
+                            imageVector = Icons.Outlined.Send,
+                            contentDescription = null,
                             colorFilter = ColorFilter.tint(MaterialTheme.colors.secondary)
                         )
                     }

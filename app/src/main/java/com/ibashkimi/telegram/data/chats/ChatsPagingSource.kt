@@ -1,6 +1,7 @@
 package com.ibashkimi.telegram.data.chats
 
 import androidx.paging.PagingSource
+import androidx.paging.PagingState
 import com.ibashkimi.telegram.await
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.drinkless.td.libcore.telegram.TdApi
@@ -29,5 +30,9 @@ class ChatsPagingSource(
         } catch (e: Exception) {
             return LoadResult.Error(e)
         }
+    }
+
+    override fun getRefreshKey(state: PagingState<Long, TdApi.Chat>): Long? {
+        return null
     }
 }
