@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -22,10 +21,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.paging.LoadState
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.items
 import com.ibashkimi.telegram.R
 import com.ibashkimi.telegram.data.Repository
-import com.ibashkimi.telegram.data.Response
-import com.ibashkimi.telegram.data.asResponse
 import dev.chrisbanes.accompanist.coil.CoilImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -64,53 +68,43 @@ fun ChatScreen(
 
 @Composable
 fun ChatContent(chatId: Long, repository: Repository, modifier: Modifier = Modifier) {
-    val history = repository.messages.getMessages(chatId).asResponse().collectAsState(null)
-    when (val response = history.value) {
-        null -> {
-            ChatLoading(modifier)
-        }
-        is Response.Success -> {
-            Column(modifier = modifier.fillMaxWidth()) {
-                ChatHistory(
-                    repository,
-                    messages = response.data,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1.0f)
-                )
-                val input = remember { mutableStateOf(TextFieldValue("")) }
-                val scope = rememberCoroutineScope()
-                MessageInput(
-                    input = input,
-                    insertGif = {
-                        // TODO
-                    }, attachFile = {
-                        // todo
-                    }, sendMessage = {
-                        scope.launch {
-                            repository.messages.sendMessage(
-                                chatId = chatId,
-                                inputMessageContent = TdApi.InputMessageText(
-                                    TdApi.FormattedText(
-                                        it,
-                                        emptyArray()
-                                    ), false, false
-                                )
-                            ).await()
-                            input.value = TextFieldValue()
-                        }
-                    })
-            }
-        }
-        is Response.Error -> {
-            Text(
-                text = "Cannot load messages",
-                style = MaterialTheme.typography.h5,
-                modifier = modifier
-                    .fillMaxSize()
-                    .wrapContentSize(Alignment.Center)
-            )
-        }
+    val history = remember {
+        Pager(PagingConfig(pageSize = 30)) {
+            repository.messages.getMessagesPaged(chatId)
+        }.flow
+    }.cachedIn(rememberCoroutineScope()).collectAsLazyPagingItems()
+
+    Column(modifier = modifier.fillMaxWidth()) {
+        ChatHistory(
+            repository,
+            messages = history,
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1.0f)
+        )
+        val input = remember { mutableStateOf(TextFieldValue("")) }
+        val scope = rememberCoroutineScope()
+        MessageInput(
+            input = input,
+            insertGif = {
+                // TODO
+            }, attachFile = {
+                // todo
+            }, sendMessage = {
+                scope.launch {
+                    repository.messages.sendMessage(
+                        chatId = chatId,
+                        inputMessageContent = TdApi.InputMessageText(
+                            TdApi.FormattedText(
+                                it,
+                                emptyArray()
+                            ), false, false
+                        )
+                    ).await()
+                    input.value = TextFieldValue()
+                    history.refresh()
+                }
+            })
     }
 }
 
@@ -128,12 +122,35 @@ fun ChatLoading(modifier: Modifier = Modifier) {
 @Composable
 fun ChatHistory(
     repository: Repository,
-    messages: List<TdApi.Message>,
+    messages: LazyPagingItems<TdApi.Message>,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(modifier = modifier) {
-        items(messages) {
-            MessageItem(repository, it)
+    LazyColumn(modifier = modifier, reverseLayout = true) {
+        when {
+            messages.loadState.refresh == LoadState.Loading -> {
+                item {
+                    ChatLoading()
+                }
+            }
+            messages.loadState.refresh is LoadState.Error -> {
+                item {
+                    Text(
+                        text = "Cannot load messages",
+                        style = MaterialTheme.typography.h5,
+                        modifier = modifier
+                            .fillMaxSize()
+                            .wrapContentSize(Alignment.Center)
+                    )
+                }
+            }
+            messages.loadState.refresh is LoadState.NotLoading && messages.itemCount == 0 -> {
+                item {
+                    Text("Empty")
+                }
+            }
+        }
+        items(messages) { message ->
+            message?.let { MessageItem(repository, it) }
         }
     }
 }

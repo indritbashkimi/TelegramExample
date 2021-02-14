@@ -1,5 +1,6 @@
 package com.ibashkimi.telegram.data.messages
 
+import androidx.paging.PagingSource
 import com.ibashkimi.telegram.data.TelegramClient
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
@@ -12,22 +13,26 @@ import org.drinkless.td.libcore.telegram.TdApi
 @OptIn(ExperimentalCoroutinesApi::class)
 class MessagesRepository(private val client: TelegramClient) {
 
-    fun getMessages(chatId: Long): Flow<List<TdApi.Message>> = callbackFlow {
-        client.client.send(TdApi.GetChatHistory(chatId, 0, 0, 100, false)) {
-            when (it.constructor) {
-                TdApi.Messages.CONSTRUCTOR -> {
-                    offer((it as TdApi.Messages).messages.toList())
-                }
-                TdApi.Error.CONSTRUCTOR -> {
-                    error("")
-                }
-                else -> {
-                    error("")
+    fun getMessages(chatId: Long, fromMessageId: Long, limit: Int): Flow<List<TdApi.Message>> =
+        callbackFlow {
+            client.client.send(TdApi.GetChatHistory(chatId, fromMessageId, 0, limit, false)) {
+                when (it.constructor) {
+                    TdApi.Messages.CONSTRUCTOR -> {
+                        offer((it as TdApi.Messages).messages.toList())
+                    }
+                    TdApi.Error.CONSTRUCTOR -> {
+                        error("")
+                    }
+                    else -> {
+                        error("")
+                    }
                 }
             }
+            awaitClose { }
         }
-        awaitClose { }
-    }
+
+    fun getMessagesPaged(chatId: Long): PagingSource<Long, TdApi.Message> =
+        MessagesPagingSource(chatId, this)
 
     fun getMessage(chatId: Long, messageId: Long): Flow<TdApi.Message> = callbackFlow {
         client.client.send(TdApi.GetMessage(chatId, messageId)) {
