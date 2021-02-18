@@ -21,5 +21,7 @@ sealed class Screen(val route: String) {
             entry.arguments!!.getString("chatId")?.toLong()
                 ?: throw IllegalArgumentException("chatId argument missing.")
     }
+
+    object CreateChat : Screen("createChat")
 }
 

@@ -1,12 +1,16 @@
 package com.ibashkimi.telegram.ui
 
 import android.app.Activity
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
@@ -21,6 +25,7 @@ import com.ibashkimi.telegram.Screen
 import com.ibashkimi.telegram.data.Authentication
 import com.ibashkimi.telegram.data.Repository
 import com.ibashkimi.telegram.ui.chat.ChatScreen
+import com.ibashkimi.telegram.ui.createchat.CreateChatScreen
 import com.ibashkimi.telegram.ui.home.HomeContent
 import com.ibashkimi.telegram.ui.login.WaitForCodeScreen
 import com.ibashkimi.telegram.ui.login.WaitForNumberScreen
@@ -67,6 +72,9 @@ private fun navHost(navController: NavHostController, viewModel: MainViewModel) 
                 navController
             )
         }
+        composable(Screen.CreateChat.route) {
+            CreateChatScreen(client = repository.client, navigateUp = navController::navigateUp)
+        }
     }
 }
 
@@ -110,6 +118,15 @@ private fun MainScreen(
         scaffoldState = scaffoldState,
         topBar = {
             TopAppBar(title = { Text(stringResource(R.string.app_name)) })
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = { navController.navigate(Screen.CreateChat.route) }) {
+                Image(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = "New message",
+                    colorFilter = ColorFilter.tint(MaterialTheme.colors.onSecondary)
+                )
+            }
         },
         bodyContent = {
             Surface(color = MaterialTheme.colors.background) {

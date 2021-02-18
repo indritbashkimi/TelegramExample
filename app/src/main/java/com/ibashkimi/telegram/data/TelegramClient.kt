@@ -6,10 +6,7 @@ import android.util.Log
 import com.ibashkimi.telegram.R
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.*
 import org.drinkless.td.libcore.telegram.Client
 import org.drinkless.td.libcore.telegram.TdApi
 import java.util.*
@@ -204,6 +201,13 @@ class TelegramClient(val application: Application) : Client.ResultHandler {
         }
     }
 
+    fun downloadableFile(file: TdApi.File): Flow<String?> =
+        file.takeIf {
+            it.local?.isDownloadingCompleted == false
+        }?.id?.let { fileId ->
+            downloadFile(fileId).map { file.local?.path }
+        } ?: flowOf(file.local?.path)
+
     fun downloadFile(fileId: Int): Flow<Unit> = callbackFlow {
         client.send(TdApi.DownloadFile(fileId, 1, 0, 0, true)) {
             when (it.constructor) {
@@ -218,4 +222,22 @@ class TelegramClient(val application: Application) : Client.ResultHandler {
         }
         awaitClose()
     }
+
+    fun sendAsFlow(query: TdApi.Function): Flow<TdApi.Object> = callbackFlow {
+        client.send(query) {
+            when (it.constructor) {
+                TdApi.Error.CONSTRUCTOR -> {
+                    error("")
+                }
+                else -> {
+                    offer(it)
+                }
+            }
+            //close()
+        }
+        awaitClose { }
+    }
+
+    inline fun <reified T : TdApi.Object> send(query: TdApi.Function): Flow<T> =
+        sendAsFlow(query).map { it as T }
 }
