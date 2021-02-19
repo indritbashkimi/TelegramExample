@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
@@ -24,6 +25,7 @@ import com.ibashkimi.telegram.data.Authentication
 import com.ibashkimi.telegram.data.Repository
 import com.ibashkimi.telegram.ui.chat.ChatScreen
 import com.ibashkimi.telegram.ui.createchat.CreateChatScreen
+import com.ibashkimi.telegram.ui.home.DrawerContent
 import com.ibashkimi.telegram.ui.home.HomeContent
 import com.ibashkimi.telegram.ui.login.WaitForCodeScreen
 import com.ibashkimi.telegram.ui.login.WaitForNumberScreen
@@ -115,7 +117,19 @@ private fun MainScreen(
         modifier = modifier,
         scaffoldState = scaffoldState,
         topBar = {
-            TopAppBar(title = { Text(stringResource(R.string.app_name)) })
+            TopAppBar(title = { Text(stringResource(R.string.app_name)) }, navigationIcon = {
+                IconButton(
+                    onClick = {
+                        scope.launch {
+                            scaffoldState.drawerState.open()
+                        }
+                    }) {
+                    Icon(
+                        imageVector = Icons.Default.Menu,
+                        contentDescription = null
+                    )
+                }
+            })
         },
         floatingActionButton = {
             FloatingActionButton(onClick = { navController.navigate(Screen.CreateChat.route) }) {
@@ -124,6 +138,14 @@ private fun MainScreen(
                     contentDescription = "New message"
                 )
             }
+        },
+        drawerContent = {
+            DrawerContent(client = repository.client,
+                newGroup = {},
+                contacts = {},
+                calls = {},
+                savedMessages = {},
+                settings = {})
         },
         content = {
             Surface(color = MaterialTheme.colors.background) {
