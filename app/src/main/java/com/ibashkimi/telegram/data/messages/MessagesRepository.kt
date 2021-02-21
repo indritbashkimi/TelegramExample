@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import org.drinkless.td.libcore.telegram.TdApi
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class MessagesRepository(private val client: TelegramClient) {
+class MessagesRepository(val client: TelegramClient) {
 
     fun getMessages(chatId: Long, fromMessageId: Long, limit: Int): Flow<List<TdApi.Message>> =
         callbackFlow {

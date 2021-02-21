@@ -1,10 +1,12 @@
 package com.ibashkimi.telegram.ui.chat
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -16,6 +18,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
@@ -27,11 +30,11 @@ import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.items
+import androidx.paging.compose.itemsIndexed
 import com.ibashkimi.telegram.R
 import com.ibashkimi.telegram.data.Repository
-import dev.chrisbanes.accompanist.coil.CoilImage
-import kotlinx.coroutines.Dispatchers
+import com.ibashkimi.telegram.data.TelegramClient
+import com.ibashkimi.telegram.ui.util.TelegramImage
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import org.drinkless.td.libcore.telegram.TdApi
@@ -149,8 +152,17 @@ fun ChatHistory(
                 }
             }
         }
-        items(messages) { message ->
-            message?.let { MessageItem(repository, it) }
+        itemsIndexed(messages) { i, message ->
+            message?.let {
+                val userId = (message.sender as TdApi.MessageSenderUser).userId
+                val previousMessageUserId =
+                    if (i > 0) (messages[i - 1]?.sender as TdApi.MessageSenderUser?)?.userId else null
+                MessageItem(
+                    isSameUserFromPreviousMessage = userId == previousMessageUserId,
+                    repository,
+                    it
+                )
+            }
         }
     }
 }
@@ -158,44 +170,85 @@ fun ChatHistory(
 @OptIn(ExperimentalCoroutinesApi::class)
 @Composable
 private fun MessageItem(
+    isSameUserFromPreviousMessage: Boolean,
     repository: Repository,
     message: TdApi.Message,
     modifier: Modifier = Modifier
 ) {
-    Row(
-        verticalAlignment = Alignment.Bottom,
-        modifier = Modifier.clickable(onClick = {}) then modifier.fillMaxWidth()
-    ) {
-        val userPhoto =
-            repository.users.getUser((message.sender as TdApi.MessageSenderUser).userId)
-            .collectAsState(null, Dispatchers.IO)
-        val imageModifier = Modifier
-            .padding(16.dp)
-            .size(40.dp)
-            .clip(shape = CircleShape)
-        userPhoto.value?.profilePhoto?.small?.local?.path?.let {
-            CoilImage(
-                data = it,
-                contentDescription = null,
-                modifier = imageModifier,
-            )
-        } ?: Box(imageModifier)
-        Card(
-            elevation = 1.dp,
-            modifier = Modifier.padding(0.dp, 4.dp, 8.dp, 4.dp)
+    val client = repository.client
+    if (message.isOutgoing) {
+        Box(
+            Modifier.clickable(onClick = {}).fillMaxWidth(),
+            contentAlignment = Alignment.BottomEnd
         ) {
-            val messageModifier = Modifier.padding(8.dp)
-            when (val content = message.content) {
-                is TdApi.MessageText -> TextMessage(content, messageModifier)
-                is TdApi.MessageVideo -> VideoMessage(content, messageModifier)
-                is TdApi.MessageCall -> CallMessage(content, messageModifier)
-                is TdApi.MessageAudio -> AudioMessage(content, messageModifier)
-                is TdApi.MessageSticker -> StickerMessage(content, messageModifier)
-                is TdApi.MessageAnimation -> AnimationMessage(content, messageModifier)
-                else -> Text(message::class.java.simpleName)
+            MessageItemCard(modifier = Modifier.padding(8.dp, 4.dp, 8.dp, 4.dp)) {
+                MessageItemContent(
+                    repository.messages.client,
+                    message,
+                    modifier = Modifier.background(Color.Green.copy(alpha = 0.2f)).padding(8.dp)
+                )
+            }
+        }
+    } else {
+        Row(
+            verticalAlignment = Alignment.Bottom,
+            modifier = Modifier.clickable(onClick = {}) then modifier.fillMaxWidth()
+        ) {
+            if (!isSameUserFromPreviousMessage) {
+                ChatUserIcon(
+                    client,
+                    (message.sender as TdApi.MessageSenderUser).userId,
+                    Modifier.padding(8.dp).clip(shape = CircleShape).size(42.dp)
+                )
+            } else {
+                Box(Modifier.padding(8.dp).size(42.dp))
+            }
+            MessageItemCard(modifier = Modifier.padding(0.dp, 4.dp, 8.dp, 4.dp)) {
+                MessageItemContent(
+                    repository.messages.client,
+                    message,
+                    modifier = Modifier.padding(8.dp)
+                )
             }
         }
     }
+}
+
+@Composable
+private fun MessageItemCard(
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) = Card(
+    elevation = 2.dp,
+    shape = RoundedCornerShape(8.dp),
+    modifier = modifier,
+    content = content
+)
+
+@Composable
+private fun MessageItemContent(
+    client: TelegramClient,
+    message: TdApi.Message,
+    modifier: Modifier = Modifier
+) {
+    when (message.content) {
+        is TdApi.MessageText -> TextMessage(message, modifier)
+        is TdApi.MessageVideo -> VideoMessage(message, modifier)
+        is TdApi.MessageCall -> CallMessage(message, modifier)
+        is TdApi.MessageAudio -> AudioMessage(message, modifier)
+        is TdApi.MessageSticker -> StickerMessage(client, message, modifier)
+        is TdApi.MessageAnimation -> AnimationMessage(client, message, modifier)
+        is TdApi.MessagePhoto -> PhotoMessage(client, message, Modifier)
+        is TdApi.MessageVideoNote -> VideoNoteMessage(client, message, modifier)
+        is TdApi.MessageVoiceNote -> VoiceNoteMessage(message, modifier)
+        else -> UnsupportedMessage()
+    }
+}
+
+@Composable
+private fun ChatUserIcon(client: TelegramClient, userId: Int, modifier: Modifier) {
+    val user = client.send<TdApi.User>(TdApi.GetUser(userId)).collectAsState(initial = null).value
+    TelegramImage(client, user?.profilePhoto?.small, modifier = modifier)
 }
 
 @Composable
