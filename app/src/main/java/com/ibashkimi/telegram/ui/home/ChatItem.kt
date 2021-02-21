@@ -2,8 +2,6 @@ package com.ibashkimi.telegram.ui.home
 
 import android.text.format.DateUtils
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -16,21 +14,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Videocam
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.ibashkimi.telegram.data.Repository
-import dev.chrisbanes.accompanist.coil.CoilImage
-import kotlinx.coroutines.Dispatchers
+import com.ibashkimi.telegram.ui.util.TelegramImage
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.drinkless.td.libcore.telegram.TdApi
-import java.io.File
 
 @Composable
 fun ChatTitle(text: String, modifier: Modifier = Modifier) {
@@ -155,7 +149,11 @@ fun ChatTime(text: String, modifier: Modifier = Modifier) {
 fun ChatItem(repository: Repository, chat: TdApi.Chat, modifier: Modifier = Modifier) {
     ListItem(modifier,
         icon = {
-            ChatImage(repository, chat)
+            TelegramImage(
+                client = repository.client,
+                file = chat.photo?.small,
+                modifier = Modifier.clip(shape = CircleShape).size(48.dp)
+            )
         },
         secondaryText = {
             ChatSummary(chat)
@@ -167,24 +165,6 @@ fun ChatItem(repository: Repository, chat: TdApi.Chat, modifier: Modifier = Modi
             }
         }
     }
-}
-
-@OptIn(ExperimentalCoroutinesApi::class)
-@Composable
-fun ChatImage(repository: Repository, chat: TdApi.Chat) {
-    val imageModifier = Modifier
-        .clip(shape = CircleShape)
-        .size(48.dp)
-    val chatPhoto =
-        repository.chats.chatImage(chat)
-            .collectAsState(chat.photo?.small?.local?.path, Dispatchers.IO)
-    chatPhoto.value?.let {
-        CoilImage(
-            data = File(it),
-            contentDescription = null,
-            modifier = imageModifier
-        )
-    } ?: Box(imageModifier.background(Color.LightGray))
 }
 
 private fun Long.toRelativeTimeSpan(): String =

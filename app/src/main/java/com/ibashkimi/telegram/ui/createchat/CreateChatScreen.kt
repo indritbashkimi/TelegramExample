@@ -1,8 +1,6 @@
 package com.ibashkimi.telegram.ui.createchat
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -18,22 +16,18 @@ import androidx.compose.material.icons.outlined.PersonAdd
 import androidx.compose.material.icons.outlined.Speaker
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import com.ibashkimi.telegram.data.TelegramClient
-import dev.chrisbanes.accompanist.coil.CoilImage
-import kotlinx.coroutines.Dispatchers
+import com.ibashkimi.telegram.ui.util.TelegramImage
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import org.drinkless.td.libcore.telegram.TdApi
-import java.io.File
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @Composable
@@ -139,7 +133,11 @@ private fun CreateChatContent(
 fun ContactItem(client: TelegramClient, user: TdApi.User, modifier: Modifier = Modifier) {
     ListItem(modifier = modifier,
         icon = {
-            UserImage(client, user.profilePhoto?.small)
+            TelegramImage(
+                client = client,
+                file = user.profilePhoto?.small,
+                modifier = Modifier.clip(shape = CircleShape).size(42.dp)
+            )
         },
         secondaryText = {
             Text(user.username ?: "")
@@ -147,25 +145,4 @@ fun ContactItem(client: TelegramClient, user: TdApi.User, modifier: Modifier = M
     ) {
         Text(user.run { "$firstName $lastName" })
     }
-}
-
-@OptIn(ExperimentalCoroutinesApi::class)
-@Composable
-fun UserImage(
-    client: TelegramClient,
-    file: TdApi.File?,
-    modifier: Modifier = Modifier
-        .clip(shape = CircleShape)
-        .size(42.dp)
-) {
-    val photo = file?.let {
-        client.downloadableFile(file).collectAsState(file.local.path, Dispatchers.IO)
-    } ?: mutableStateOf(null)
-    photo.value?.let {
-        CoilImage(
-            data = File(it),
-            contentDescription = null,
-            modifier = modifier
-        )
-    } ?: Box(modifier.background(Color.LightGray))
 }
