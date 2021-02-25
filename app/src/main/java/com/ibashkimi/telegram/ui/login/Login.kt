@@ -43,7 +43,7 @@ private fun AuthorizationScreen(title: String, message: String? = null, onEnter:
         topBar = {
             TopAppBar(title = { Text(title) })
         },
-        bodyContent = {
+        content = {
             if (executed.value) {
                 CircularProgressIndicator()
             } else {
@@ -59,7 +59,7 @@ private fun AuthorizationScreen(title: String, message: String? = null, onEnter:
                         textStyle = MaterialTheme.typography.h5
                     )
                     if (message == null) {
-                        Spacer(modifier = Modifier.preferredHeight(16.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
                     } else {
                         Text(message, modifier = Modifier.padding(vertical = 16.dp))
                     }

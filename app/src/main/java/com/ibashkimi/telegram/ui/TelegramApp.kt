@@ -128,7 +128,7 @@ private fun MainScreen(
                 )
             }
         },
-        bodyContent = {
+        content = {
             Surface(color = MaterialTheme.colors.background) {
                 HomeContent(repository, navController, modifier = Modifier.fillMaxWidth()) {
                     scope.launch {

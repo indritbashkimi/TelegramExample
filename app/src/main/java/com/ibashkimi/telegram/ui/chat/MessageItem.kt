@@ -204,7 +204,7 @@ private fun PhotoMessage(
     val width: Dp = with(LocalDensity.current) {
         photo.width.toDp()
     }
-    Column(modifier.preferredWidth(min(200.dp, width))) {
+    Column(modifier.width(min(200.dp, width))) {
         TelegramImage(
             client,
             message.photo.sizes.last().photo,
@@ -216,7 +216,7 @@ private fun PhotoMessage(
 }
 
 @Composable
-fun UnsupportedMessage(title: String? = null, modifier: Modifier = Modifier) {
+fun UnsupportedMessage(modifier: Modifier = Modifier, title: String? = null) {
     Text(title ?: "<Unsupported message>", modifier = modifier)
 }
 

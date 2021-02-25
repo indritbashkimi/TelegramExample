@@ -63,7 +63,7 @@ fun ChatScreen(
                     }
                 })
         },
-        bodyContent = {
+        content = {
             ChatContent(chatId, repository)
         }
     )
@@ -305,7 +305,7 @@ fun MessageInput(
                     }
                 }
             },
-            backgroundColor = MaterialTheme.colors.surface
+            colors = TextFieldDefaults.textFieldColors(backgroundColor = MaterialTheme.colors.surface)
         )
     }
 }

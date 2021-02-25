@@ -76,7 +76,7 @@ fun CreateChatScreen(
                 )
             }
         },
-        bodyContent = {
+        content = {
             val users = client.send<TdApi.Users>(TdApi.GetContacts()).map { result ->
                 result.userIds.map { client.send<TdApi.User>(TdApi.GetUser(it)) }
             }.flatMapLatest {
