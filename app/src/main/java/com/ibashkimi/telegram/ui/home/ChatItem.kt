@@ -141,7 +141,9 @@ fun ChatItem(repository: Repository, chat: TdApi.Chat, modifier: Modifier = Modi
             TelegramImage(
                 client = repository.client,
                 file = chat.photo?.small,
-                modifier = Modifier.clip(shape = CircleShape).size(48.dp)
+                modifier = Modifier
+                    .clip(shape = CircleShape)
+                    .size(48.dp)
             )
         },
         secondaryText = {

@@ -130,7 +130,9 @@ fun ContactItem(client: TelegramClient, user: TdApi.User, modifier: Modifier = M
             TelegramImage(
                 client = client,
                 file = user.profilePhoto?.small,
-                modifier = Modifier.clip(shape = CircleShape).size(42.dp)
+                modifier = Modifier
+                    .clip(shape = CircleShape)
+                    .size(42.dp)
             )
         },
         secondaryText = {

@@ -1,6 +1,5 @@
 package com.ibashkimi.telegram.ui.chat
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -19,7 +18,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -166,7 +164,6 @@ fun ChatHistory(
     }
 }
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @Composable
 private fun MessageItem(
     isSameUserFromPreviousMessage: Boolean,
@@ -177,14 +174,18 @@ private fun MessageItem(
     val client = repository.client
     if (message.isOutgoing) {
         Box(
-            Modifier.clickable(onClick = {}).fillMaxWidth(),
+            Modifier
+                .clickable(onClick = {})
+                .fillMaxWidth(),
             contentAlignment = Alignment.BottomEnd
         ) {
             MessageItemCard(modifier = Modifier.padding(8.dp, 4.dp, 8.dp, 4.dp)) {
                 MessageItemContent(
                     repository.messages.client,
                     message,
-                    modifier = Modifier.background(Color.Green.copy(alpha = 0.2f)).padding(8.dp)
+                    modifier = Modifier
+                        .background(Color.Green.copy(alpha = 0.2f))
+                        .padding(8.dp)
                 )
             }
         }
@@ -197,10 +198,16 @@ private fun MessageItem(
                 ChatUserIcon(
                     client,
                     (message.sender as TdApi.MessageSenderUser).userId,
-                    Modifier.padding(8.dp).clip(shape = CircleShape).size(42.dp)
+                    Modifier
+                        .padding(8.dp)
+                        .clip(shape = CircleShape)
+                        .size(42.dp)
                 )
             } else {
-                Box(Modifier.padding(8.dp).size(42.dp))
+                Box(
+                    Modifier
+                        .padding(8.dp)
+                        .size(42.dp))
             }
             MessageItemCard(modifier = Modifier.padding(0.dp, 4.dp, 8.dp, 4.dp)) {
                 MessageItemContent(

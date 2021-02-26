@@ -144,7 +144,9 @@ private fun CallMessage(content: TdApi.MessageCall, modifier: Modifier = Modifie
         Icon(
             imageVector = Icons.Outlined.Call,
             contentDescription = null,
-            modifier = Modifier.padding(8.dp).size(18.dp)
+            modifier = Modifier
+                .padding(8.dp)
+                .size(18.dp)
         )
     }
 }
