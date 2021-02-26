@@ -30,6 +30,7 @@ class TelegramClient(val application: Application) : Client.ResultHandler {
     val authState: StateFlow<Authentication> get() = _authState
 
     init {
+        client.send(TdApi.SetLogVerbosityLevel(1), this)
         client.send(TdApi.GetAuthorizationState(), this)
     }
 
