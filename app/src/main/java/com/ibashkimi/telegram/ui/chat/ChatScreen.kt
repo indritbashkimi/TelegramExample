@@ -129,7 +129,7 @@ fun ChatHistory(
 ) {
     LazyColumn(modifier = modifier, reverseLayout = true) {
         when {
-            messages.loadState.refresh == LoadState.Loading -> {
+            messages.loadState.refresh is LoadState.Loading -> {
                 item {
                     ChatLoading()
                 }
