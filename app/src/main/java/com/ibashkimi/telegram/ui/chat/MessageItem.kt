@@ -19,9 +19,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
+import com.google.accompanist.coil.CoilImage
 import com.ibashkimi.telegram.data.TelegramClient
 import com.ibashkimi.telegram.ui.util.TelegramImage
-import dev.chrisbanes.accompanist.coil.CoilImage
 import org.drinkless.td.libcore.telegram.TdApi
 import java.io.File
 import java.util.*
