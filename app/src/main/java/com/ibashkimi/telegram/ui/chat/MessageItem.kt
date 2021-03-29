@@ -1,7 +1,7 @@
 package com.ibashkimi.telegram.ui.chat
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -14,7 +14,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -142,11 +141,10 @@ private fun CallMessage(content: TdApi.MessageCall, modifier: Modifier = Modifie
     }
     Row(modifier, verticalAlignment = Alignment.CenterVertically) {
         Text(text = msg, modifier = modifier)
-        Image(
+        Icon(
             imageVector = Icons.Outlined.Call,
             contentDescription = null,
-            modifier = Modifier.padding(8.dp).size(18.dp),
-            colorFilter = ColorFilter.tint(MaterialTheme.colors.secondary)
+            modifier = Modifier.padding(8.dp).size(18.dp)
         )
     }
 }
@@ -256,30 +254,26 @@ private fun MessageSendingState(
     sendingState: TdApi.MessageSendingState?,
     modifier: Modifier = Modifier
 ) {
-    val colorFilter = ColorFilter.tint(MaterialTheme.colors.onBackground)
     when (sendingState) {
         is TdApi.MessageSendingStatePending -> {
-            Image(
+            Icon(
                 imageVector = Icons.Outlined.Pending,
                 contentDescription = null,
-                modifier = modifier,
-                colorFilter = colorFilter
+                modifier = modifier
             )
         }
         is TdApi.MessageSendingStateFailed -> {
-            Image(
+            Icon(
                 imageVector = Icons.Outlined.SyncProblem,
                 contentDescription = null,
-                modifier = modifier,
-                colorFilter = colorFilter
+                modifier = modifier
             )
         }
         else -> {
-            Image(
+            Icon(
                 imageVector = Icons.Outlined.Done,
                 contentDescription = null,
-                modifier = modifier,
-                colorFilter = colorFilter
+                modifier = modifier
             )
         }
     }

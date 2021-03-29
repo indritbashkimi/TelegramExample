@@ -1,6 +1,5 @@
 package com.ibashkimi.telegram.ui.createchat
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -18,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import com.ibashkimi.telegram.data.TelegramClient
 import com.ibashkimi.telegram.ui.util.TelegramImage
@@ -43,36 +41,32 @@ fun CreateChatScreen(
                 title = { Text("New message") },
                 navigationIcon = {
                     IconButton(onClick = { navigateUp() }) {
-                        Image(
+                        Icon(
                             imageVector = Icons.Default.ArrowBack,
-                            contentDescription = null,
-                            colorFilter = ColorFilter.tint(MaterialTheme.colors.onPrimary)
+                            contentDescription = null
                         )
                     }
                 },
                 actions = {
                     IconButton(onClick = { /*TODO*/ }) {
-                        Image(
+                        Icon(
                             imageVector = Icons.Default.Search,
-                            contentDescription = "Search contact",
-                            colorFilter = ColorFilter.tint(MaterialTheme.colors.onPrimary)
+                            contentDescription = "Search contact"
                         )
                     }
                     IconButton(onClick = { /*TODO*/ }) {
-                        Image(
+                        Icon(
                             imageVector = Icons.Default.Sort,
-                            contentDescription = "Sort",
-                            colorFilter = ColorFilter.tint(MaterialTheme.colors.onPrimary)
+                            contentDescription = "Sort"
                         )
                     }
                 })
         },
         floatingActionButton = {
             FloatingActionButton(onClick = {}) {
-                Image(
+                Icon(
                     imageVector = Icons.Outlined.PersonAdd,
-                    contentDescription = "New contact",
-                    colorFilter = ColorFilter.tint(MaterialTheme.colors.onSecondary)
+                    contentDescription = "New contact"
                 )
             }
         },
@@ -98,21 +92,21 @@ private fun CreateChatContent(
     LazyColumn(modifier = modifier) {
         item {
             ListItem(icon = {
-                Image(imageVector = Icons.Outlined.People, contentDescription = null)
+                Icon(imageVector = Icons.Outlined.People, contentDescription = null)
             }) {
                 Text("New Group")
             }
         }
         item {
             ListItem(icon = {
-                Image(imageVector = Icons.Outlined.Lock, contentDescription = null)
+                Icon(imageVector = Icons.Outlined.Lock, contentDescription = null)
             }) {
                 Text("New Secret Chat")
             }
         }
         item {
             ListItem(icon = {
-                Image(imageVector = Icons.Outlined.Speaker, contentDescription = null)
+                Icon(imageVector = Icons.Outlined.Speaker, contentDescription = null)
             }) {
                 Text("New Channel")
             }

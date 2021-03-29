@@ -1,7 +1,6 @@
 package com.ibashkimi.telegram.ui
 
 import android.app.Activity
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -10,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
@@ -121,10 +119,9 @@ private fun MainScreen(
         },
         floatingActionButton = {
             FloatingActionButton(onClick = { navController.navigate(Screen.CreateChat.route) }) {
-                Image(
+                Icon(
                     imageVector = Icons.Default.Edit,
-                    contentDescription = "New message",
-                    colorFilter = ColorFilter.tint(MaterialTheme.colors.onSecondary)
+                    contentDescription = "New message"
                 )
             }
         },

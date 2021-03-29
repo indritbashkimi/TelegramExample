@@ -1,15 +1,11 @@
 package com.ibashkimi.telegram.ui.home
 
 import android.text.format.DateUtils
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ListItem
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Videocam
@@ -18,7 +14,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.ibashkimi.telegram.data.Repository
@@ -49,11 +44,9 @@ fun ChatSummary(chat: TdApi.Chat, modifier: Modifier = Modifier) {
             TdApi.MessageAudio.CONSTRUCTOR -> {
                 val message = it as TdApi.MessageAudio
                 Row(modifier = modifier) {
-                    Image(
+                    Icon(
                         imageVector = Icons.Default.Mic,
-                        contentDescription = null,
-                        alignment = Alignment.Center,
-                        colorFilter = ColorFilter.tint(MaterialTheme.colors.primary)
+                        contentDescription = null
                     )
                     Text(
                         text = message.audio.duration.toTime(),
@@ -73,11 +66,9 @@ fun ChatSummary(chat: TdApi.Chat, modifier: Modifier = Modifier) {
             TdApi.MessageVoiceNote.CONSTRUCTOR -> {
                 val message = it as TdApi.MessageVoiceNote
                 Row(modifier = modifier) {
-                    Image(
+                    Icon(
                         imageVector = Icons.Default.Mic,
-                        contentDescription = null,
-                        alignment = Alignment.Center,
-                        colorFilter = ColorFilter.tint(MaterialTheme.colors.primary)
+                        contentDescription = null
                     )
                     Text(
                         text = message.voiceNote.duration.toTime(),
@@ -88,11 +79,9 @@ fun ChatSummary(chat: TdApi.Chat, modifier: Modifier = Modifier) {
             TdApi.MessageVideoNote.CONSTRUCTOR -> {
                 val message = it as TdApi.MessageVideoNote
                 Row(modifier = modifier) {
-                    Image(
+                    Icon(
                         imageVector = Icons.Default.Videocam,
-                        contentDescription = null,
-                        alignment = Alignment.Center,
-                        colorFilter = ColorFilter.tint(MaterialTheme.colors.primary)
+                        contentDescription = null
                     )
                     Text(
                         text = message.videoNote.duration.toTime(),

@@ -55,10 +55,9 @@ fun ChatScreen(
                 title = { Text(chat.value?.title ?: "", maxLines = 1) },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
-                        Image(
+                        Icon(
                             imageVector = Icons.Default.ArrowBack,
-                            contentDescription = null,
-                            colorFilter = ColorFilter.tint(MaterialTheme.colors.onPrimary)
+                            contentDescription = null
                         )
                     }
                 })
@@ -270,10 +269,9 @@ fun MessageInput(
             },
             leadingIcon = {
                 IconButton(onClick = insertGif) {
-                    Image(
+                    Icon(
                         imageVector = Icons.Default.Gif,
-                        contentDescription = null,
-                        colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface)
+                        contentDescription = null
                     )
                 }
             },
@@ -281,26 +279,23 @@ fun MessageInput(
                 if (input.value.text.isEmpty()) {
                     Row {
                         IconButton(onClick = attachFile) {
-                            Image(
+                            Icon(
                                 imageVector = Icons.Outlined.AttachFile,
-                                contentDescription = null,
-                                colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface)
+                                contentDescription = null
                             )
                         }
                         IconButton(onClick = { }) {
-                            Image(
+                            Icon(
                                 imageVector = Icons.Outlined.Mic,
-                                contentDescription = null,
-                                colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface)
+                                contentDescription = null
                             )
                         }
                     }
                 } else {
                     IconButton(onClick = { sendMessage(input.value.text) }) {
-                        Image(
+                        Icon(
                             imageVector = Icons.Outlined.Send,
-                            contentDescription = null,
-                            colorFilter = ColorFilter.tint(MaterialTheme.colors.secondary)
+                            contentDescription = null
                         )
                     }
                 }
