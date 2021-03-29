@@ -2,8 +2,8 @@ package com.ibashkimi.telegram.data.chats
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.ibashkimi.telegram.await
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import org.drinkless.td.libcore.telegram.TdApi
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -20,7 +20,7 @@ class ChatsPagingSource(
                 nextPageNumber,
                 params.loadSize
             )
-            val chats = response.await()
+            val chats = response.first()
             return LoadResult.Page(
                 data = chats,
                 prevKey = null,
