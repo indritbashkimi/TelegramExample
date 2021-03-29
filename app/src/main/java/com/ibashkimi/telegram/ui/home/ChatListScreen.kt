@@ -3,18 +3,13 @@ package com.ibashkimi.telegram.ui.home
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.LinearProgressIndicator
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.navigate
@@ -25,7 +20,6 @@ import androidx.paging.cachedIn
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemsIndexed
-import com.ibashkimi.telegram.R
 import com.ibashkimi.telegram.Screen
 import com.ibashkimi.telegram.data.Repository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -64,26 +58,9 @@ private fun ChatsLoaded(
     showSnackbar: (String) -> Unit
 ) {
     LazyColumn(modifier = modifier) {
-        when {
-            chats.loadState.refresh == LoadState.Loading -> {
-                item {
-                    LoadingChats()
-                }
-            }
-            chats.loadState.refresh is LoadState.Error -> {
-                item {
-                    showSnackbar(stringResource(R.string.chats_error))
-                }
-            }
-            chats.loadState.refresh is LoadState.NotLoading && chats.itemCount == 0 -> {
-                item {
-                    Text("Empty")
-                }
-            }
-        }
-        if (chats.loadState.prepend == LoadState.Loading) {
+        if (chats.loadState.refresh is LoadState.Loading) {
             item {
-                LoadingMore()
+                LoadingChats()
             }
         }
         itemsIndexed(chats) { index, item ->
@@ -101,12 +78,6 @@ private fun ChatsLoaded(
                     startIndent = 64.dp
                 )
             }
-
-        }
-        if (chats.loadState.append == LoadState.Loading) {
-            item {
-                LoadingMore()
-            }
         }
     }
 }
@@ -116,11 +87,3 @@ private fun LoadingChats(modifier: Modifier = Modifier) {
     LinearProgressIndicator(modifier = modifier.fillMaxWidth())
 }
 
-@Composable
-private fun LoadingMore(modifier: Modifier = Modifier) {
-    CircularProgressIndicator(
-        modifier = modifier
-            .fillMaxWidth()
-            .wrapContentWidth(Alignment.CenterHorizontally)
-    )
-}
