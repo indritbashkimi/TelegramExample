@@ -6,9 +6,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
 import org.drinkless.td.libcore.telegram.TdApi
+import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
-class ChatsRepository(private val client: TelegramClient) {
+class ChatsRepository @Inject constructor(private val client: TelegramClient) {
 
     private fun getChatIds(offsetOrder: Long = Long.MAX_VALUE, limit: Int): Flow<LongArray> =
         callbackFlow {

@@ -1,18 +1,18 @@
 package com.ibashkimi.telegram
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import com.ibashkimi.telegram.data.Repository
 import com.ibashkimi.telegram.data.TelegramClient
 import com.ibashkimi.telegram.data.UserRepository
 import com.ibashkimi.telegram.data.chats.ChatsRepository
 import com.ibashkimi.telegram.data.messages.MessagesRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class MainViewModel(app: Application) : AndroidViewModel(app) {
-
-    private var client: TelegramClient = TelegramClient(app)
+@HiltViewModel
+class MainViewModel @Inject constructor(private val client: TelegramClient) : ViewModel() {
 
     val repository = Repository(
         client,
@@ -21,10 +21,6 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         UserRepository(client)
     )
 
-    val authState = repository.client.authState
+    val authState = client.authState
 
-    override fun onCleared() {
-        super.onCleared()
-        client.close()
-    }
 }

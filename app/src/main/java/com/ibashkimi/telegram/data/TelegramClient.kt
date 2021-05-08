@@ -1,15 +1,12 @@
 package com.ibashkimi.telegram.data
 
-import android.app.Application
-import android.os.Build
 import android.util.Log
-import com.ibashkimi.telegram.R
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
 import org.drinkless.td.libcore.telegram.Client
 import org.drinkless.td.libcore.telegram.TdApi
-import java.util.*
+import javax.inject.Inject
 
 /*
  * Go to https://my.telegram.org to obtain api id (integer) and api hash (string).
@@ -20,7 +17,9 @@ import java.util.*
  * </resources>
  */
 @OptIn(ExperimentalCoroutinesApi::class)
-class TelegramClient(val application: Application) : Client.ResultHandler {
+class TelegramClient @Inject constructor(
+    private val tdLibParameters: TdApi.TdlibParameters
+) : Client.ResultHandler {
 
     private val TAG = TelegramClient::class.java.simpleName
 
@@ -70,20 +69,6 @@ class TelegramClient(val application: Application) : Client.ResultHandler {
         }
 
         doAsync {
-            val tdLibParameters = TdApi.TdlibParameters().apply {
-                // Obtain application identifier hash for Telegram API access at https://my.telegram.org
-                apiId = application.resources.getInteger(R.integer.telegram_api_id)
-                apiHash = application.getString(R.string.telegram_api_hash)
-                useMessageDatabase = true
-                useSecretChats = true
-                systemLanguageCode = Locale.getDefault().language
-                databaseDirectory = application.filesDir.absolutePath
-                deviceModel = Build.MODEL
-                systemVersion = Build.VERSION.RELEASE
-                applicationVersion = "0.1"
-                enableStorageOptimizer = true
-            }
-
             client.send(TdApi.SetTdlibParameters(tdLibParameters)) {
                 Log.d(TAG, "SetTdlibParameters result: $it")
                 when (it.constructor) {

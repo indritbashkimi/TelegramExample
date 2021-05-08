@@ -5,9 +5,10 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ibashkimi.telegram.ui.TelegramApp
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     @OptIn(ExperimentalCoroutinesApi::class)

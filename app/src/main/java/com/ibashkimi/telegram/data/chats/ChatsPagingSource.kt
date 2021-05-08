@@ -5,9 +5,10 @@ import androidx.paging.PagingState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import org.drinkless.td.libcore.telegram.TdApi
+import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class ChatsPagingSource(
+class ChatsPagingSource @Inject constructor(
     private val chats: ChatsRepository
 ) : PagingSource<Long, TdApi.Chat>() {
 

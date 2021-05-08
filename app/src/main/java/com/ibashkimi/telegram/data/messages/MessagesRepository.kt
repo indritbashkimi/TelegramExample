@@ -9,9 +9,10 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import org.drinkless.td.libcore.telegram.TdApi
+import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class MessagesRepository(val client: TelegramClient) {
+class MessagesRepository @Inject constructor(val client: TelegramClient) {
 
     fun getMessages(chatId: Long, fromMessageId: Long, limit: Int): Flow<List<TdApi.Message>> =
         callbackFlow {
