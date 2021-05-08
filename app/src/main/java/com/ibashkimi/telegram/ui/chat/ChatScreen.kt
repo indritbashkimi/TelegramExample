@@ -21,16 +21,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.paging.LoadState
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.cachedIn
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemsIndexed
 import com.ibashkimi.telegram.R
-import com.ibashkimi.telegram.data.Repository
 import com.ibashkimi.telegram.data.TelegramClient
 import com.ibashkimi.telegram.ui.util.TelegramImage
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -40,12 +37,15 @@ import org.drinkless.td.libcore.telegram.TdApi
 @OptIn(ExperimentalCoroutinesApi::class)
 @Composable
 fun ChatScreen(
-    repository: Repository,
     chatId: Long,
     navController: NavController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: ChatScreenViewModel = viewModel()
 ) {
-    val chat = repository.chats.getChat(chatId).collectAsState(null)
+    LaunchedEffect(chatId) {
+        viewModel.setChatId(chatId)
+    }
+    val chat = viewModel.chat.collectAsState(null)
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -61,22 +61,18 @@ fun ChatScreen(
                 })
         },
         content = {
-            ChatContent(chatId, repository)
+            ChatContent(viewModel)
         }
     )
 }
 
 @Composable
-fun ChatContent(chatId: Long, repository: Repository, modifier: Modifier = Modifier) {
-    val history = remember {
-        Pager(PagingConfig(pageSize = 30)) {
-            repository.messages.getMessagesPaged(chatId)
-        }.flow
-    }.cachedIn(rememberCoroutineScope()).collectAsLazyPagingItems()
+fun ChatContent(viewModel: ChatScreenViewModel, modifier: Modifier = Modifier) {
+    val history = viewModel.messagesPaged.collectAsLazyPagingItems()
 
     Column(modifier = modifier.fillMaxWidth()) {
         ChatHistory(
-            repository,
+            client = viewModel.client,
             messages = history,
             modifier = Modifier
                 .fillMaxWidth()
@@ -92,8 +88,7 @@ fun ChatContent(chatId: Long, repository: Repository, modifier: Modifier = Modif
                 // todo
             }, sendMessage = {
                 scope.launch {
-                    repository.messages.sendMessage(
-                        chatId = chatId,
+                    viewModel.sendMessage(
                         inputMessageContent = TdApi.InputMessageText(
                             TdApi.FormattedText(
                                 it,
@@ -121,7 +116,7 @@ fun ChatLoading(modifier: Modifier = Modifier) {
 
 @Composable
 fun ChatHistory(
-    repository: Repository,
+    client: TelegramClient,
     messages: LazyPagingItems<TdApi.Message>,
     modifier: Modifier = Modifier
 ) {
@@ -156,7 +151,7 @@ fun ChatHistory(
                     if (i > 0) (messages[i - 1]?.sender as TdApi.MessageSenderUser?)?.userId else null
                 MessageItem(
                     isSameUserFromPreviousMessage = userId == previousMessageUserId,
-                    repository,
+                    client,
                     it
                 )
             }
@@ -167,11 +162,10 @@ fun ChatHistory(
 @Composable
 private fun MessageItem(
     isSameUserFromPreviousMessage: Boolean,
-    repository: Repository,
+    client: TelegramClient,
     message: TdApi.Message,
     modifier: Modifier = Modifier
 ) {
-    val client = repository.client
     if (message.isOutgoing) {
         Box(
             Modifier
@@ -181,7 +175,7 @@ private fun MessageItem(
         ) {
             MessageItemCard(modifier = Modifier.padding(8.dp, 4.dp, 8.dp, 4.dp)) {
                 MessageItemContent(
-                    repository.messages.client,
+                    client,
                     message,
                     modifier = Modifier
                         .background(Color.Green.copy(alpha = 0.2f))
@@ -211,7 +205,7 @@ private fun MessageItem(
             }
             MessageItemCard(modifier = Modifier.padding(0.dp, 4.dp, 8.dp, 4.dp)) {
                 MessageItemContent(
-                    repository.messages.client,
+                    client,
                     message,
                     modifier = Modifier.padding(8.dp)
                 )

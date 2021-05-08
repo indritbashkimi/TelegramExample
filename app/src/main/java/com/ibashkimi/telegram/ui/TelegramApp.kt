@@ -12,6 +12,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltNavGraphViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -22,11 +24,13 @@ import com.ibashkimi.telegram.MainViewModel
 import com.ibashkimi.telegram.R
 import com.ibashkimi.telegram.Screen
 import com.ibashkimi.telegram.data.Authentication
-import com.ibashkimi.telegram.data.Repository
+import com.ibashkimi.telegram.data.TelegramClient
 import com.ibashkimi.telegram.ui.chat.ChatScreen
+import com.ibashkimi.telegram.ui.chat.ChatScreenViewModel
 import com.ibashkimi.telegram.ui.createchat.CreateChatScreen
 import com.ibashkimi.telegram.ui.home.DrawerContent
 import com.ibashkimi.telegram.ui.home.HomeContent
+import com.ibashkimi.telegram.ui.home.HomeViewModel
 import com.ibashkimi.telegram.ui.login.WaitForCodeScreen
 import com.ibashkimi.telegram.ui.login.WaitForNumberScreen
 import com.ibashkimi.telegram.ui.login.WaitForPasswordScreen
@@ -38,56 +42,61 @@ fun TelegramApp(activity: Activity, viewModel: MainViewModel) {
     TelegramTheme {
         activity.window.statusBarColor = MaterialTheme.colors.primaryVariant.toArgb()
         val navController = rememberNavController()
-        navHost(navController, viewModel)
+        navHost(navController, viewModel.client)
         observeAuthState(navController, viewModel)
     }
 }
 
 @Composable
-private fun navHost(navController: NavHostController, viewModel: MainViewModel) {
-    val repository = viewModel.repository
+private fun navHost(navController: NavHostController, client: TelegramClient) {
     NavHost(navController, startDestination = Screen.Home.route) {
         composable(Screen.Home.route) {
-            MainScreen(repository, navController)
+            MainScreen(navController = navController, viewModel = hiltNavGraphViewModel(it))
         }
         composable(Screen.EnterPhoneNumber.route) {
             WaitForNumberScreen {
-                repository.client.insertPhoneNumber(it)
+                client.insertPhoneNumber(it)
             }
         }
         composable(Screen.EnterCode.route) {
             WaitForCodeScreen {
-                repository.client.insertCode(it)
+                client.insertCode(it)
             }
         }
         composable(Screen.EnterPassword.route) {
             WaitForPasswordScreen {
-                repository.client.insertPassword(it)
+                client.insertPassword(it)
             }
         }
         composable(Screen.Chat.route) {
+            val chatId = Screen.Chat.getChatId(it)
+            val viewModel: ChatScreenViewModel =
+                navController.hiltNavGraphViewModel(Screen.Chat.route)
+            viewModel.setChatId(chatId)
             ChatScreen(
-                repository,
-                Screen.Chat.getChatId(it),
-                navController
+                chatId = chatId,
+                navController = navController,
+                viewModel = viewModel
             )
         }
         composable(Screen.CreateChat.route) {
-            CreateChatScreen(client = repository.client, navigateUp = navController::navigateUp)
+            CreateChatScreen(
+                navigateUp = navController::navigateUp,
+                viewModel = hiltNavGraphViewModel(it)
+            )
         }
     }
 }
 
 @Composable
 fun observeAuthState(navController: NavHostController, viewModel: MainViewModel) {
-    val repository = viewModel.repository
     val authState = viewModel.authState.collectAsState(Authentication.UNKNOWN)
     when (authState.value) {
         Authentication.UNKNOWN -> {
             // Loading
         }
         Authentication.UNAUTHENTICATED -> {
-            repository.client.startAuthentication()
+            viewModel.client.startAuthentication()
         }
         Authentication.WAIT_FOR_NUMBER -> {
             navController.navigate(Screen.EnterPhoneNumber.route)
@@ -107,9 +116,9 @@ fun observeAuthState(navController: NavHostController, viewModel: MainViewModel)
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun MainScreen(
-    repository: Repository,
     navController: NavController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: HomeViewModel = viewModel()
 ) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
@@ -140,7 +149,7 @@ private fun MainScreen(
             }
         },
         drawerContent = {
-            DrawerContent(client = repository.client,
+            DrawerContent(client = viewModel.client,
                 newGroup = {},
                 contacts = {},
                 calls = {},
@@ -149,7 +158,7 @@ private fun MainScreen(
         },
         content = {
             Surface(color = MaterialTheme.colors.background) {
-                HomeContent(repository, navController, modifier = Modifier.fillMaxWidth()) {
+                HomeContent(navController, modifier = Modifier.fillMaxWidth()) {
                     scope.launch {
                         scaffoldState.snackbarHostState.showSnackbar(it)
                     }

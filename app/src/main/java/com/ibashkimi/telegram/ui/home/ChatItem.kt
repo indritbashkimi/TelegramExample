@@ -16,7 +16,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.ibashkimi.telegram.data.Repository
+import com.ibashkimi.telegram.data.TelegramClient
 import com.ibashkimi.telegram.ui.util.TelegramImage
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.drinkless.td.libcore.telegram.TdApi
@@ -135,11 +135,11 @@ fun ChatTime(text: String, modifier: Modifier = Modifier) {
 
 @OptIn(ExperimentalCoroutinesApi::class, ExperimentalMaterialApi::class)
 @Composable
-fun ChatItem(repository: Repository, chat: TdApi.Chat, modifier: Modifier = Modifier) {
+fun ChatItem(client: TelegramClient, chat: TdApi.Chat, modifier: Modifier = Modifier) {
     ListItem(modifier,
         icon = {
             TelegramImage(
-                client = repository.client,
+                client = client,
                 file = chat.photo?.small,
                 modifier = Modifier
                     .clip(shape = CircleShape)

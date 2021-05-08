@@ -39,8 +39,6 @@ class ChatsRepository @Inject constructor(private val client: TelegramClient) {
                 }
             }
 
-    fun getChatsPaged(): PagingSource<Long, TdApi.Chat> = ChatsPagingSource(this)
-
     fun getChat(chatId: Long): Flow<TdApi.Chat> = callbackFlow {
         client.client.send(TdApi.GetChat(chatId)) {
             when (it.constructor) {

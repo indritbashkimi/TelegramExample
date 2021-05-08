@@ -4,6 +4,9 @@ import android.content.Context
 import android.os.Build
 import com.ibashkimi.telegram.R
 import com.ibashkimi.telegram.data.TelegramClient
+import com.ibashkimi.telegram.data.UserRepository
+import com.ibashkimi.telegram.data.chats.ChatsRepository
+import com.ibashkimi.telegram.data.messages.MessagesRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -52,4 +55,12 @@ object AppModule {
     @Provides
     fun provideTelegramClient(parameters: TdApi.TdlibParameters) = TelegramClient(parameters)
 
+    @Provides
+    fun provideChatsRepository(client: TelegramClient) = ChatsRepository(client)
+
+    @Provides
+    fun provideMessagesRepository(client: TelegramClient) = MessagesRepository(client)
+
+    @Provides
+    fun provideUserRepository(client: TelegramClient) = UserRepository(client)
 }

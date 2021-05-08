@@ -18,21 +18,19 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ibashkimi.telegram.data.TelegramClient
 import com.ibashkimi.telegram.ui.util.TelegramImage
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
 import org.drinkless.td.libcore.telegram.TdApi
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @Composable
 fun CreateChatScreen(
-    client: TelegramClient,
     navigateUp: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: CreateChatViewModel = viewModel()
 ) {
     Scaffold(
         modifier = modifier,
@@ -71,12 +69,7 @@ fun CreateChatScreen(
             }
         },
         content = {
-            val users = client.send<TdApi.Users>(TdApi.GetContacts()).map { result ->
-                result.userIds.map { client.send<TdApi.User>(TdApi.GetUser(it)) }
-            }.flatMapLatest {
-                combine(it) { users -> users.toList() }
-            }.map { users -> users.sortedBy { it.firstName } }
-            CreateChatContent(client, users)
+            CreateChatContent(viewModel.client, viewModel.users)
         }
     )
 }
