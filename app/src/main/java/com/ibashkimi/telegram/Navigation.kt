@@ -9,11 +9,7 @@ sealed class Screen(val route: String) {
 
     object Home : Screen("home")
 
-    object EnterPhoneNumber : Screen("login/enterPhoneNumber")
-
-    object EnterCode : Screen("login/enterCode")
-
-    object EnterPassword : Screen("login/enterPassword")
+    object Login : Screen("login")
 
     object Chat : Screen("chat/{chatId}") {
         fun buildRoute(chatId: Long): String = "chat/${chatId}"

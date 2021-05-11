@@ -3,6 +3,7 @@ package com.ibashkimi.telegram.ui.login
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -10,6 +11,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+
+@Composable
+fun LoginScreen(viewModel: LoginViewModel = viewModel(), loggedIn: () -> Unit) {
+    val uiState by viewModel.uiState
+    when (uiState) {
+        is UiState.InsertNumber -> WaitForNumberScreen {
+            viewModel.insertPhoneNumber(it)
+        }
+        is UiState.InsertCode -> WaitForCodeScreen {
+            viewModel.insertCode(it)
+        }
+        is UiState.InsertPassword -> WaitForPasswordScreen {
+            viewModel.insertPassword(it)
+        }
+        UiState.Loading -> {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        }
+        UiState.Authenticated -> {
+            loggedIn()
+        }
+    }
+}
 
 @Composable
 fun WaitForNumberScreen(onEnter: (String) -> Unit) {
